@@ -3,342 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Video+Audio Editor — Single File</title>
+<title>محرر فيديو احترافي</title>
 <style>
-  :root { --bg:#0f1320; --card:#141927; --accent:#1E90FF; --text:#e6e9ef; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,Segoe UI,Arial; }
-  header { padding:16px; text-align:center; background:linear-gradient(90deg,#1E90FF33,#00BFFF22); }
-  h1 { margin:0; font-size:20px; letter-spacing:.3px; }
-  .container { max-width:1000px; margin:16px auto; padding:0 12px; }
-  .card { background:var(--card); border:1px solid #2a3145; border-radius:12px; padding:16px; margin-bottom:16px; }
-  .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-  label { display:block; font-size:13px; color:#cfd6e6; margin-bottom:6px; }
-  input[type="file"], select, input[type="number"], input[type="range"], button {
-    width:100%; padding:10px; border-radius:8px; border:1px solid #33405c; background:#0e1320; color:var(--text);
-  }
-  input[type="range"] { accent-color: var(--accent); }
-  button { cursor:pointer; background:var(--accent); border-color:#1E90FF; color:#fff; font-weight:600; }
-  button.secondary { background:#1b2340; border-color:#3b4a75; }
-  button:disabled { opacity:.5; cursor:not-allowed; }
-  .preview { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; }
-  video, canvas { max-width:100%; width:100%; background:#000; border-radius:8px; }
-  .small { font-size:12px; color:#a9b4c9; }
-  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .badge { display:inline-block; background:#102447; color:#9accff; border:1px solid #1E90FF55; padding:4px 8px; border-radius:999px; font-size:12px; }
-  .out { word-break:break-all; font-size:12px; background:#0d1423; border:1px dashed #3b4a75; padding:8px; border-radius:8px; }
+  body { font-family: Arial, sans-serif; background:#111; color:#eee; margin:0; padding:20px; }
+  h1 { text-align:center; color:#1E90FF; }
+  .card { background:#222; padding:15px; border-radius:10px; margin-bottom:20px; }
+  label { display:block; margin:10px 0 5px; }
+  input, select, button { width:100%; padding:8px; margin-bottom:10px; border-radius:6px; border:none; }
+  button { background:#1E90FF; color:#fff; cursor:pointer; }
+  video, canvas { width:100%; max-height:400px; background:#000; border-radius:8px; }
 </style>
 </head>
 <body>
-<header>
-  <h1>محرر فيديو + موسيقى (ملف واحد)</h1>
-  <div class="small">إضافة صوت، قص البداية/النهاية، فلتر بسيط، وتصدير WebM — جاهز للرفع على GitHub Pages</div>
-</header>
+<h1>🎬 محرر فيديو + موسيقى (احترافي)</h1>
 
-<div class="container">
+<div class="card">
+  <label>اختر فيديو</label>
+  <input id="videoFile" type="file" accept="video/*">
+  <label>اختر موسيقى</label>
+  <input id="audioFile" type="file" accept="audio/*">
+  <label>فلتر الفيديو</label>
+  <select id="filter">
+    <option value="none">بدون</option>
+    <option value="grayscale(100%)">أبيض وأسود</option>
+    <option value="sepia(80%)">سيبيا</option>
+    <option value="brightness(1.3)">سطوع أعلى</option>
+    <option value="contrast(1.3)">تباين أعلى</option>
+  </select>
+  <label><input type="checkbox" id="muteOriginal"> إلغاء صوت الفيديو الأصلي</label>
+  <button id="export">تصدير الفيديو</button>
+  <a id="download" style="display:none" download="output.webm">⬇️ تنزيل الناتج</a>
+</div>
 
-  <div class="card">
-    <div class="row">
-      <div>
-        <label>حمّل فيديو (MP4/WEBM/…)</label>
-        <input id="videoFile" type="file" accept="video/*">
-      </div>
-      <div>
-        <label>حمّل صوت (MP3/WAV/…)</label>
-        <input id="audioFile" type="file" accept="audio/*">
-      </div>
-    </div>
-    <div class="grid2" style="margin-top:12px">
-      <div>
-        <label>بداية القص (ثانية)</label>
-        <input id="startSec" type="number" min="0" value="0">
-      </div>
-      <div>
-        <label>نهاية القص (ثانية، اتركها فاضية للنهاية)</label>
-        <input id="endSec" type="number" min="0" placeholder="مثال: 15">
-      </div>
-    </div>
-    <div class="row-3" style="margin-top:12px">
-      <div>
-        <label>فلتر الفيديو (Canvas)</label>
-        <select id="filter">
-          <option value="none">بدون</option>
-          <option value="grayscale(100%)">Grayscale</option>
-          <option value="sepia(80%)">Sepia</option>
-          <option value="brightness(1.2)">زيادة السطوع</option>
-          <option value="contrast(1.3)">زيادة التباين</option>
-          <option value="saturate(1.4)">تشبيع أعلى</option>
-          <option value="invert(100%)">عكس الألوان</option>
-          <option value="blur(2px)">تمويه خفيف</option>
-        </select>
-      </div>
-      <div>
-        <label>سرعة التشغيل</label>
-        <select id="playbackRate">
-          <option value="0.5">0.5x</option>
-          <option value="0.75">0.75x</option>
-          <option value="1" selected>1x</option>
-          <option value="1.25">1.25x</option>
-          <option value="1.5">1.5x</option>
-          <option value="2">2x</option>
-        </select>
-      </div>
-      <div>
-        <label>مستوى الصوت (للموسيقى)</label>
-        <input id="audioGain" type="range" min="0" max="2" step="0.05" value="1">
-        <div class="small">0 = صامت، 2 = مضاعف</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card preview">
-    <div style="flex:1;min-width:280px">
-      <label>معاينة الفيديو</label>
-      <video id="video" controls playsinline></video>
-      <div style="margin-top:8px; display:flex; gap:8px">
-        <button id="snapshot" class="secondary">التقاط صورة</button>
-        <button id="export" disabled>بدء التصدير</button>
-        <button id="download" class="secondary" disabled>تنزيل الناتج</button>
-      </div>
-      <div style="margin-top:8px">
-        <span class="badge" id="status">جاهز</span>
-      </div>
-    </div>
-    <div style="flex:1;min-width:280px">
-      <label>مخرجات</label>
-      <canvas id="canvas"></canvas>
-      <div class="out" id="log"></div>
-      <div id="thumbs" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="small">
-      القيود: الإخراج WebM عبر MediaRecorder (VP8/VP9). للفيديوهات الكبيرة جدًا قد يكون الأداء محدود. لإخراج MP4 أو ترميز متقدم ستحتاج لاحقًا إلى ffmpeg.wasm أو سيرفر.
-    </div>
-  </div>
-
+<div class="card">
+  <video id="video" controls></video>
+  <canvas id="canvas"></canvas>
 </div>
 
 <script>
-(function(){
-  const els = {
-    videoFile: document.getElementById('videoFile'),
-    audioFile: document.getElementById('audioFile'),
-    startSec: document.getElementById('startSec'),
-    endSec: document.getElementById('endSec'),
-    filter: document.getElementById('filter'),
-    playbackRate: document.getElementById('playbackRate'),
-    audioGain: document.getElementById('audioGain'),
-    video: document.getElementById('video'),
-    canvas: document.getElementById('canvas'),
-    snapshot: document.getElementById('snapshot'),
-    exportBtn: document.getElementById('export'),
-    downloadBtn: document.getElementById('download'),
-    status: document.getElementById('status'),
-    log: document.getElementById('log'),
-    thumbs: document.getElementById('thumbs'),
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let audio = null;
+
+document.getElementById('videoFile').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(file){ video.src = URL.createObjectURL(file); }
+});
+
+document.getElementById('audioFile').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(file){ audio = new Audio(URL.createObjectURL(file)); audio.loop = true; }
+});
+
+document.getElementById('export').addEventListener('click', ()=>{
+  if(!video.src){ alert("حمّل فيديو أولاً"); return; }
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const stream = canvas.captureStream(30);
+
+  // إلغاء صوت الفيديو الأصلي لو المستخدم اختار
+  if(!document.getElementById('muteOriginal').checked){
+    video.muted = false;
+    stream.addTrack(video.captureStream().getAudioTracks()[0]);
+  } else {
+    video.muted = true;
+  }
+
+  // إضافة الصوت الخارجي
+  if(audio){
+    const ctxAudio = new AudioContext();
+    const source = ctxAudio.createMediaElementSource(audio);
+    const dest = ctxAudio.createMediaStreamDestination();
+    source.connect(dest);
+    source.connect(ctxAudio.destination);
+    if(dest.stream.getAudioTracks()[0]){
+      stream.addTrack(dest.stream.getAudioTracks()[0]);
+    }
+    audio.play();
+  }
+
+  const rec = new MediaRecorder(stream, {mimeType:'video/webm'});
+  const chunks = [];
+  rec.ondataavailable = e=> chunks.push(e.data);
+  rec.onstop = ()=>{
+    const blob = new Blob(chunks, {type:'video/webm'});
+    const url = URL.createObjectURL(blob);
+    const a = document.getElementById('download');
+    a.href = url;
+    a.style.display = 'block';
   };
+  rec.start();
+  video.play();
 
-  let audio = null;
-  let audioCtx = null;
-  let gainNode = null;
-  let audioSource = null;
-
-  let recorder = null;
-  let recordedBlobs = [];
-  let exporting = false;
-
-  function log(msg){
-    const p = document.createElement('div');
-    p.textContent = msg;
-    els.log.appendChild(p);
+  function draw(){
+    ctx.filter = document.getElementById('filter').value;
+    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    if(!video.paused && !video.ended){ requestAnimationFrame(draw); }
+    else{ rec.stop(); }
   }
-  function setStatus(text){
-    els.status.textContent = text;
-  }
-
-  // Load video
-  els.videoFile.addEventListener('change', async (e)=>{
-    const file = e.target.files?.[0];
-    if(!file) return;
-    const url = URL.createObjectURL(file);
-    els.video.src = url;
-    els.video.load();
-    els.video.onloadedmetadata = ()=>{
-      els.canvas.width = els.video.videoWidth || 1280;
-      els.canvas.height = els.video.videoHeight || 720;
-      els.exportBtn.disabled = false;
-      setStatus('فيديو جاهز: ' + Math.round(els.video.duration) + ' ثانية');
-    };
-  });
-
-  // Load audio
-  els.audioFile.addEventListener('change', async (e)=>{
-    const file = e.target.files?.[0];
-    if(!file) return;
-    if(audio){ audio.pause(); audio = null; }
-    const url = URL.createObjectURL(file);
-    audio = new Audio(url);
-    audio.crossOrigin = 'anonymous';
-    audio.preload = 'auto';
-    log('تم تحميل الصوت');
-  });
-
-  // Snapshot
-  els.snapshot.addEventListener('click', ()=>{
-    if(!els.video.src) return;
-    const ctx = els.canvas.getContext('2d');
-    ctx.filter = els.filter.value === 'none' ? 'none' : els.filter.value;
-    ctx.drawImage(els.video, 0, 0, els.canvas.width, els.canvas.height);
-    els.canvas.toBlob((blob)=>{
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(blob);
-      img.style.width = '120px';
-      img.style.height = 'auto';
-      els.thumbs.appendChild(img);
-    }, 'image/png');
-  });
-
-  // Export flow: draw frames to canvas + record canvas + mix audio
-  els.exportBtn.addEventListener('click', async ()=>{
-    if(exporting) return;
-    if(!els.video.src){ alert('حمّل فيديو أولاً'); return; }
-    setStatus('بدء التصدير…');
-    exporting = true;
-    els.exportBtn.disabled = true;
-    els.downloadBtn.disabled = true;
-    recordedBlobs = [];
-    els.log.innerHTML = '';
-
-    const ctx = els.canvas.getContext('2d');
-    const stream = els.canvas.captureStream(30); // 30fps تقريبًا
-
-    // Setup audio mix (optional)
-    if(audio){
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      gainNode = audioCtx.createGain();
-      gainNode.gain.value = parseFloat(els.audioGain.value);
-      audioSource = audioCtx.createMediaElementSource(audio);
-      audioSource.connect(gainNode).connect(audioCtx.destination);
-      // ضم الصوت إلى الستريم
-      const dest = audioCtx.createMediaStreamDestination();
-      audioSource.connect(gainNode).connect(dest);
-      if(dest.stream.getAudioTracks().length) {
-        dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
-      }
-    }
-
-    // Recorder
-    const options = { mimeType: 'video/webm;codecs=vp9' };
-    let supported = MediaRecorder.isTypeSupported(options.mimeType);
-    const finalOpts = supported ? options : { mimeType: 'video/webm;codecs=vp8' };
-    recorder = new MediaRecorder(stream, finalOpts);
-    recorder.ondataavailable = (e)=>{ if(e.data && e.data.size) recordedBlobs.push(e.data); };
-    recorder.onstop = ()=> {
-      const blob = new Blob(recordedBlobs, { type: finalOpts.mimeType });
-      const url = URL.createObjectURL(blob);
-      els.downloadBtn.href = url;
-      els.downloadBtn.download = 'output.webm';
-      els.downloadBtn.disabled = false;
-      setStatus('جاهز للتنزيل');
-      log('الحجم: ' + Math.round(blob.size/1024) + ' KB');
-    };
-    recorder.start(100); // تجزئة كل 100ms
-
-    // Playback settings
-    els.video.playbackRate = parseFloat(els.playbackRate.value);
-    if(audio){
-      audio.playbackRate = parseFloat(els.playbackRate.value); // مزامنة السرعة
-      audio.currentTime = 0;
-    }
-
-    const start = Math.max(0, parseFloat(els.startSec.value) || 0);
-    const end = parseFloat(els.endSec.value);
-    const hasEnd = !isNaN(end) && end > start;
-
-    // ابدأ من وقت البداية
-    els.video.currentTime = start;
-    await els.video.play();
-    if(audio) await audio.play();
-
-    // Render loop
-    const filterValue = els.filter.value === 'none' ? 'none' : els.filter.value;
-    const w = els.canvas.width, h = els.canvas.height;
-
-    let stopRequested = false;
-    function drawFrame(){
-      if(stopRequested) return;
-      ctx.filter = filterValue;
-      ctx.drawImage(els.video, 0, 0, w, h);
-      // يمكنك إضافة Overlay نصي بسيط كمثال:
-      // ctx.filter = 'none';
-      // ctx.fillStyle = 'rgba(30,144,255,0.6)';
-      // ctx.fillRect(10, h-40, 180, 30);
-      // ctx.fillStyle = '#fff';
-      // ctx.font = '16px Segoe UI';
-      // ctx.fillText('Edited with Single File', 18, h-18);
-
-      // نهاية القص
-      const t = els.video.currentTime;
-      if(hasEnd && t >= end) {
-        stopRequested = true;
-        finish();
-        return;
-      }
-      requestAnimationFrame(drawFrame);
-    }
-    drawFrame();
-
-    async function finish(){
-      try{
-        els.video.pause();
-        if(audio) audio.pause();
-        recorder.stop();
-        exporting = false;
-        els.exportBtn.disabled = false;
-        setStatus('اكتمل التصدير');
-        log('اكتمل التصدير');
-      }catch(err){
-        log('خطأ أثناء الإيقاف: ' + err.message);
-        exporting = false;
-        els.exportBtn.disabled = false;
-        setStatus('فشل التصدير');
-      }
-    }
-  });
-
-  // Gain live update
-  els.audioGain.addEventListener('input', ()=>{
-    if(gainNode) gainNode.gain.value = parseFloat(els.audioGain.value);
-  });
-
-  // Filter live update (للمعاينة فقط)
-  els.filter.addEventListener('change', ()=>{
-    const f = els.filter.value;
-    els.canvas.style.filter = f; // تأثير مرئي على المعاينة
-  });
-
-})();
-</script>
-
-<!-- PWA-lite: Service Worker inline registration via Blob (اختياري للتثبيت) -->
-<script>
-if('serviceWorker' in navigator){
-  const swCode = `
-    self.addEventListener('install', (e)=> {
-      e.waitUntil(caches.open('sf-app-v1').then(cache=>cache.addAll(['./'])));
-      self.skipWaiting();
-    });
-    self.addEventListener('activate', (e)=> self.clients.claim());
-    self.addEventListener('fetch', (e)=> {
-      e.respondWith(caches.match(e.request).then(r=> r || fetch(e.request)));
-    });
-  `;
-  const blob = new Blob([swCode], {type:'text/javascript'});
-  const swUrl = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl).catch(()=>{});
-}
+  draw();
+});
 </script>
 </body>
 </html>
