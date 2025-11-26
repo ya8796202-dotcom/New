@@ -4,51 +4,61 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Yotyosr — شبيه يوتيوب</title>
+<meta name="theme-color" content="#0ea5e9" />
 <style>
-  body{margin:0;background:#0f0f0f;color:#fff;font-family:Roboto,"Segoe UI",Tahoma,sans-serif}
-  .header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#0f0f0f;border-bottom:1px solid #303030}
-  .logo{display:flex;align-items:center;gap:8px;font-weight:700}
-  .logo .play{width:26px;height:18px;background:#fff;clip-path:polygon(0 0,100% 50%,0 100%)}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:16px}
-  .card{cursor:pointer}
-  .thumb{width:100%;aspect-ratio:16/9;background:#111;border-radius:12px;object-fit:cover}
-  .meta{margin-top:6px}
-  .title{font-weight:500}
-  .sub{color:#aaa;font-size:.9rem}
-  video{width:100%;max-height:70vh;background:#000;border-radius:12px}
+/* ستايل مشابه ليوتيوب */
+body{margin:0;background:#0f0f0f;color:#fff;font-family:Roboto,"Segoe UI",Tahoma,sans-serif}
+.header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#0f0f0f;border-bottom:1px solid #303030}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700}
+.logo .play{width:26px;height:18px;background:#fff;clip-path:polygon(0 0,100% 50%,0 100%)}
+.sidebar{width:220px;background:#0f0f0f;border-right:1px solid #303030;position:fixed;top:56px;bottom:0;overflow:auto}
+.nav-item{padding:10px 16px;color:#e6e6e6;cursor:pointer}
+.nav-item:hover{background:#1f1f1f}
+.main{margin-left:220px;padding-top:56px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:16px}
+.card{cursor:pointer}
+.thumb{width:100%;aspect-ratio:16/9;background:#111;border-radius:12px;object-fit:cover}
+.meta{margin-top:6px}
+.title{font-weight:500}
+.sub{color:#aaa;font-size:.9rem}
+video{width:100%;max-height:70vh;background:#000;border-radius:12px}
 </style>
+<link id="appIconLink" rel="icon" type="image/png" />
+<link id="manifestLink" rel="manifest" />
 </head>
 <body>
 <div class="header">
   <div class="logo"><div class="play"></div><div class="name">Yotyosr</div></div>
+  <input id="searchInp" type="text" placeholder="ابحث" style="flex:1;margin:0 16px;padding:8px;border-radius:20px;border:1px solid #303030;background:#121212;color:#fff"/>
 </div>
-<div id="homeView">
-  <div class="grid" id="grid"></div>
+<div class="sidebar">
+  <div class="nav-item" data-cat="الكل">الرئيسية</div>
+  <div class="nav-item" data-cat="موسيقى">موسيقى</div>
+  <div class="nav-item" data-cat="ألعاب">ألعاب</div>
+  <div class="nav-item" data-cat="تعليمي">تعليمي</div>
+  <div class="nav-item" data-cat="رياضة">رياضة</div>
 </div>
-<div id="watchView" style="display:none;padding:16px">
-  <video id="player" controls playsinline></video>
-  <div class="title" id="watchTitle">—</div>
-  <div class="sub" id="watchMeta">—</div>
-  <button onclick="backHome()">⬅️ رجوع</button>
+<div class="main">
+  <div id="homeView">
+    <div class="grid" id="grid"></div>
+  </div>
+  <div id="watchView" style="display:none;padding:16px">
+    <video id="player" controls playsinline></video>
+    <div class="title" id="watchTitle">—</div>
+    <div class="sub" id="watchMeta">—</div>
+    <button onclick="backHome()">⬅️ رجوع</button>
+  </div>
 </div>
 
 <script>
-const grid=document.getElementById('grid');
-const homeView=document.getElementById('homeView');
-const watchView=document.getElementById('watchView');
-const player=document.getElementById('player');
-const watchTitle=document.getElementById('watchTitle');
-const watchMeta=document.getElementById('watchMeta');
 let library=[];
-
 async function loadVideos(){
   const res=await fetch('videos.json');
   library=await res.json();
   renderHome();
 }
-
 function renderHome(){
-  grid.innerHTML='';
+  const grid=document.getElementById('grid');grid.innerHTML='';
   library.forEach(it=>{
     const card=document.createElement('div');card.className='card';
     const th=document.createElement('img');th.className='thumb';th.src=it.thumb||'';th.alt=it.title;
@@ -61,20 +71,19 @@ function renderHome(){
     grid.appendChild(card);
   });
 }
-
 function openWatch(it){
-  homeView.style.display='none';
-  watchView.style.display='block';
+  document.getElementById('homeView').style.display='none';
+  document.getElementById('watchView').style.display='block';
+  const player=document.getElementById('player');
   player.src=it.url;
-  watchTitle.textContent=it.title;
-  watchMeta.textContent=`${it.channel} • ${it.views} • ${it.age}`;
+  document.getElementById('watchTitle').textContent=it.title;
+  document.getElementById('watchMeta').textContent=`${it.channel} • ${it.views} • ${it.age}`;
 }
 function backHome(){
-  watchView.style.display='none';
-  homeView.style.display='block';
-  player.pause();
+  document.getElementById('watchView').style.display='none';
+  document.getElementById('homeView').style.display='block';
+  document.getElementById('player').pause();
 }
-
 document.addEventListener('DOMContentLoaded',loadVideos);
 </script>
 </body>
