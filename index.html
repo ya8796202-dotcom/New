@@ -6,12 +6,12 @@
 <title>محرر فيديو زجاجي — ملف واحد</title>
 <style>
   :root{
-    --bg: #0b1020;
+    --bg: #0a0f1f;
     --fg: #eaf2ff;
+    --card: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.16);
     --accent: #4ca7ff;
     --accent2:#7bd7ff;
-    --card: rgba(255,255,255,0.08);
-    --border: rgba(255,255,255,0.20);
     --glass: blur(18px) saturate(120%) contrast(105%);
   }
   @media (prefers-color-scheme: light){
@@ -19,11 +19,11 @@
   }
   *{ box-sizing:border-box }
   body{
-    margin:0; font-family: ui-rounded, system-ui, Segoe UI, Arial;
+    margin:0; font-family: ui-rounded, system-ui, "Segoe UI", Arial;
     background:
-      radial-gradient(1200px 600px at 10% 10%, #0c1e44, transparent 60%),
-      radial-gradient(1200px 600px at 90% 0%, #0a314f, transparent 50%),
-      linear-gradient(180deg, #0b1020, #0b1020);
+      radial-gradient(1200px 600px at 8% 12%, #0c1e44, transparent 60%),
+      radial-gradient(1000px 500px at 92% 0%, #0a314f, transparent 50%),
+      linear-gradient(180deg, var(--bg), var(--bg));
     color: var(--fg);
     min-height:100vh;
   }
@@ -58,7 +58,7 @@
   button.secondary{
     background:linear-gradient(180deg,#14223f,#1b2a4f); color:#d7e7ff; border-color:#2a3f66;
   }
-  button:disabled{ opacity:.5; cursor:not-allowed }
+  button:disabled{ opacity:.55; cursor:not-allowed }
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
   .row-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px }
   .help{ font-size:12px; color:#aac8e9 }
@@ -72,8 +72,9 @@
   .small{ font-size:12px; color:#a9c8e9 }
   .out{ font-size:12px; background:#0c172f; border:1px dashed #3a5a86; padding:8px; border-radius:12px }
   .pill{ display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px;
-         background:#123155aa; border:1px solid #4ca7ff33; color:#cfe5ff; font-size:12px }
+         background:#123155aa; border:1px solid #4ca7ff33; color:#cfe5ff; font-size:12px; text-decoration:none }
   .thumbs img{ width:120px; border-radius:12px; border:1px solid #28466c66 }
+  footer{ text-align:center; padding:14px; color:#9fbfe6; font-size:13px }
 </style>
 </head>
 <body>
@@ -105,7 +106,7 @@
         </select>
       </div>
       <div>
-        <label>مستوى موسيقى خارجي</label>
+        <label>مستوى الموسيقى الخارجية</label>
         <input id="audioGain" type="range" min="0" max="2" step="0.05" value="1">
         <div class="help">0 صامت — 2 مضاعف</div>
       </div>
@@ -155,14 +156,13 @@
         </select>
       </div>
       <div>
-        <label>شدة الفلتر الإضافي</label>
+        <label>شدة التوهج التلوين</label>
         <input id="filterExtra" type="range" min="0" max="1" step="0.01" value="0">
-        <div class="help">يُضاف فوق الفلتر المختار (لون/سطوع بسيط)</div>
+        <div class="help">يُضاف فوق الفلتر المختار (Tint/Glow)</div>
       </div>
       <div>
-        <label>لون توهج خفيف</label>
+        <label>لون التوهج</label>
         <input id="glowColor" type="text" value="#4ca7ff">
-        <div class="help">HEX مثل #4ca7ff</div>
       </div>
     </div>
 
@@ -170,7 +170,7 @@
       <div>
         <label>إضافة صورة Overlay</label>
         <input id="imageFile" type="file" accept="image/*">
-        <div class="help">تظهر فوق الفيديو — يمكنك تحريكها</div>
+        <div class="help">تظهر فوق الفيديو — يمكنك تحريكها وحركتها</div>
       </div>
       <div>
         <label>نص Overlay</label>
@@ -202,7 +202,7 @@
     <div class="stack" style="margin-top:12px">
       <button id="snapshot" class="secondary">التقاط صورة</button>
       <button id="export">بدء التصدير</button>
-      <a id="download" class="pill" style="display:none" download="output.webm">⬇️ تنزيل الناتج</a>
+      <a id="download" class="pill" style="display:none" download="output.webm">⬇️ تنزيل الفيديو</a>
       <span class="badge" id="status">جاهز</span>
     </div>
   </div>
@@ -227,6 +227,8 @@
   </div>
 
 </div>
+
+<footer>نسخة ملف واحد جاهزة للرفع على GitHub Pages • يمكنك استبدال الأيقونة المدمجة بصورة شعارك لاحقًا</footer>
 
 <script>
 (function(){
@@ -306,15 +308,15 @@
 
   function currentTime(){ return els.video.currentTime || 0; }
 
-  // Composite frame: video + filter + glow + overlays (image/text) + transitions
+  // Composite frame: video + filter + glow + overlays + transitions
   function drawCompositeFrame(ctx, video, canvas, t){
     const w=canvas.width, h=canvas.height;
 
     // Transition alpha (fade-in/out)
-    const start=parseFloat(els.startSec.value)||0;
-    const end=parseFloat(els.endSec.value)||video.duration;
-    const dur=end-start;
-    const tr=els.videoTransition.value;
+    const start=parseFloat(els.startSec?.value)||0;
+    const end=parseFloat(els.endSec?.value)||video.duration;
+    const dur=Math.max(0.001, end-start);
+    const tr=document.getElementById('videoTransition').value;
     let alpha=1;
     if(tr==='fade'){
       const dIn = Math.min(1.5, Math.max(0.3, dur*0.1));
@@ -430,6 +432,8 @@
       els.downloadBtn.style.display='inline-flex';
       setStatus('جاهز للتنزيل');
       log('الحجم: ' + Math.round(blob.size/1024) + ' KB');
+      // Optional: small toast
+      showToast('تم تجهيز الفيديو للتنزيل');
     };
     recorder.start(120);
 
@@ -470,16 +474,30 @@
   els.filter.addEventListener('change', ()=>{ els.canvas.style.filter = els.filter.value; });
   els.audioGain.addEventListener('input', ()=>{ if(gainNode) gainNode.gain.value = parseFloat(els.audioGain.value)||1; });
 
+  // Simple toast
+  function showToast(text){
+    const t = document.createElement('div');
+    t.textContent = text;
+    Object.assign(t.style, {
+      position:'fixed', left:'50%', transform:'translateX(-50%)', bottom:'24px',
+      background:'#0b2038', color:'#dff3ff', padding:'10px 16px', borderRadius:'12px',
+      boxShadow:'0 8px 24px rgba(0,0,0,0.4)', zIndex:9999, opacity:0, transition:'opacity .25s'
+    });
+    document.body.appendChild(t);
+    requestAnimationFrame(()=> t.style.opacity = '1');
+    setTimeout(()=> { t.style.opacity='0'; setTimeout(()=> t.remove(),300); }, 3000);
+  }
+
   // PWA manifest & SW inline (icon + caching)
   if('serviceWorker' in navigator){
-    // Minimal icon (base64 PNG 192x192)
+    // أيقونة مدمجة (Base64 PNG 192x192) — استبدلها لاحقًا لو حبيت
     const iconPng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADMAQAAAABrRr0NAAAAC0lEQVR4nO3BMQEAAAgDINc/9EoYHcQhCk0AAAAASUVORK5CYII=';
     const manifest = {
       name: "Glass Video Editor",
       short_name: "GlassEdit",
       start_url: "./",
       display: "standalone",
-      background_color: "#0b1020",
+      background_color: "#0a0f1f",
       theme_color: "#4ca7ff",
       icons: [{ src: iconPng, sizes: "192x192", type: "image/png" }]
     };
