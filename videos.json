@@ -3,7 +3,7 @@
     "id": 1,
     "title": "مراجعة مشروع أردوينو",
     "channel": "قناة ياسر",
-    "views": "120 مشاهدة",
+    "views": 120,
     "age": "منذ يومين",
     "url": "videos/arduino.mp4",
     "thumb": "thumbs/arduino.jpg",
@@ -11,12 +11,22 @@
   },
   {
     "id": 2,
-    "title": "تجربة فيديو موسيقى",
+    "title": "تجربة موسيقية",
     "channel": "قناة ياسر",
-    "views": "85 مشاهدة",
+    "views": 85,
     "age": "منذ أسبوع",
     "url": "videos/music.mp4",
     "thumb": "thumbs/music.jpg",
     "category": "موسيقى"
+  },
+  {
+    "id": 3,
+    "title": "مباراة ممتعة",
+    "channel": "قناة ياسر",
+    "views": 205,
+    "age": "منذ 3 أيام",
+    "url": "videos/sports.mp4",
+    "thumb": "",
+    "category": "رياضة"
   }
 ]
