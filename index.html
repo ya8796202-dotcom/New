@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>محرر فيديو زجاجي — تصدير سريع وزر تنزيل</title>
+<title>محرر فيديو زجاجي — زر تنزيل ظاهر</title>
 <link rel="manifest" href="/manifest.json">
 <style>
   :root{
@@ -55,8 +55,8 @@
 </head>
 <body>
 <header>
-  <h1>محرر فيديو زجاجي — تصدير سريع وزر تنزيل</h1>
-  <div class="small">تحسينات للأداء وزر تنزيل فعلي يظهر بعد التصدير</div>
+  <h1>محرر فيديو زجاجي — زر تنزيل ظاهر</h1>
+  <div class="small">الزر ظاهر دايمًا؛ يتفعل عند تجهيز الفيديو</div>
 </header>
 
 <div class="container">
@@ -205,8 +205,8 @@
       <button id="snapshot" class="secondary">التقاط صورة</button>
       <button id="export">بدء التصدير</button>
 
-      <!-- زر تنزيل حقيقي -->
-      <button id="downloadBtn" class="pill" style="display:none" disabled>⬇️ تنزيل الفيديو</button>
+      <!-- الزر ظاهر دايمًا لكن معطّل حتى يصبح جاهز -->
+      <button id="downloadBtn" class="pill" style="display:inline-flex" disabled>⬇️ تنزيل الفيديو</button>
 
       <button id="installBtn">تثبيت التطبيق</button>
       <span class="badge" id="status">جاهز</span>
@@ -508,10 +508,8 @@
         const url = URL.createObjectURL(blob);
         lastOutputUrl = url;
 
-        // تفعيل زر التنزيل كزر حقيقي
+        // تفعيل زر التنزيل (الزر ظاهر دايمًا لكن كان معطّل)
         els.downloadBtn.disabled = false;
-        els.downloadBtn.style.display = 'inline-flex';
-        els.downloadBtn.textContent = '⬇️ تنزيل الفيديو';
         els.downloadBtn.dataset.blobUrl = url;
 
         setStatus('جاهز للتنزيل');
@@ -592,7 +590,7 @@
     setTimeout(()=> {
       try{ URL.revokeObjectURL(url); }catch{}
       if(lastOutputUrl === url) lastOutputUrl = null;
-      els.downloadBtn.style.display = 'none';
+      // الزر يبقى ظاهر لكن معطّل بعد التنزيل
       setStatus('تم التنزيل');
     }, 2500);
   });
