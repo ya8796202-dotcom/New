@@ -1,17 +1,14 @@
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
 
 h1 {
-    color: green;
+    color: darkblue;
     text-align: center;
-  background-color:yellow;
-  font-weight:bold;
 }
-h2{
-    color:red;
-    text-align:center;
-    background-color:dodgerblue;
-    
-body {
 
-  text-align: center;
-  background-color:green;
+p {
+    color: #333;
+    font-size: 18px;
 }
