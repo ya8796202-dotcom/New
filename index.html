@@ -3,91 +3,53 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>بطاقات اقتباس — PWA واحد-ملف</title>
+<title>فحص الجهاز والمتصفح — PWA واحد-ملف</title>
 <meta name="theme-color" content="#0ea5e9" />
 
 <style>
   :root{
-    --bg:#0b1220;
-    --glass:rgba(255,255,255,.08);
-    --glass-2:rgba(255,255,255,.14);
-    --text:#e6f2ff;
-    --muted:#a9c2d9;
-    --accent:#0ea5e9;
-    --accent-2:#22d3ee;
-    --danger:#ef4444;
-    --ok:#10b981;
-    --shadow: 0 20px 40px rgba(0,0,0,.35);
-    --radius:18px;
+    --bg:#0b1220; --glass:rgba(255,255,255,.08); --text:#e6f2ff; --muted:#a9c2d9;
+    --accent:#0ea5e9; --accent-2:#22d3ee; --shadow:0 20px 40px rgba(0,0,0,.35); --radius:18px;
   }
-  *{box-sizing:border-box}
-  html,body{
+  *{box-sizing:border-box} html,body{margin:0; min-height:100%; color:var(--text);
     background: radial-gradient(1000px 700px at 10% 10%, #0f1b33 0%, #0b1220 45%, #070c16 100%);
-    color:var(--text); font-family: "Segoe UI", Tahoma, sans-serif; margin:0; min-height:100%;
+    font-family: "Segoe UI", Tahoma, sans-serif;
   }
-  .container{
-    max-width:1000px; margin:0 auto; padding:24px;
-  }
-  header{
-    display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:18px;
-  }
-  .brand{
-    display:flex; align-items:center; gap:12px;
-    padding:10px 14px; border-radius:12px; background:var(--glass); backdrop-filter: blur(12px);
-    box-shadow: var(--shadow);
-  }
-  .brand canvas{ width:40px; height:40px; border-radius:10px; }
-  .brand .titles{ display:flex; flex-direction:column; }
-  .brand .titles .name{ font-weight:700; letter-spacing:.3px}
-  .brand .titles .sub{ color:var(--muted); font-size:.9rem }
-  .actions{ display:flex; gap:10px; flex-wrap:wrap }
-  button{
-    appearance:none; border:none; color:#fff; font-weight:600;
-    padding:10px 14px; border-radius:12px; cursor:pointer;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    box-shadow: var(--shadow);
-  }
-  button.secondary{
-    background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
-    color:var(--text);
-  }
-  button:disabled{ opacity:.6; cursor:not-allowed }
-  .card{
-    margin-top:16px; border-radius:var(--radius); background:var(--glass);
-    backdrop-filter: blur(18px); box-shadow: var(--shadow); overflow:hidden;
-  }
-  .canvas-wrap{ position:relative; }
-  #quoteCanvas{ width:100%; height:auto; display:block; }
-  .toolbar{
-    display:flex; gap:8px; padding:12px; border-top:1px solid rgba(255,255,255,.06);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  }
-  .toolbar .group{ display:flex; gap:8px; flex-wrap:wrap }
-  .pill{
-    padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.08); color:var(--muted); font-size:.9rem
-  }
-  .input, select{
-    padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.15);
-    background:rgba(255,255,255,.06); color:var(--text);
-  }
-  .toast{
-    position:fixed; right:20px; bottom:20px; background:rgba(16,185,129,.15);
-    color:#d1fae5; border:1px solid rgba(16,185,129,.45);
-    padding:10px 14px; border-radius:12px; backdrop-filter: blur(10px); box-shadow: var(--shadow);
-    transform: translateY(20px); opacity:0; pointer-events:none; transition: .35s ease;
-  }
-  .toast.show{ transform: translateY(0); opacity:1; pointer-events:auto }
-  .offline{
-    position:fixed; left:20px; bottom:20px; background:rgba(239,68,68,.12);
-    color:#fecaca; border:1px solid rgba(239,68,68,.4);
-    padding:8px 12px; border-radius:10px; backdrop-filter: blur(10px);
-  }
-  .shortcuts{ margin-top:10px; color:var(--muted); font-size:.9rem }
-  a.link{ color:#7dd3fc; text-decoration:none }
-  .hint{ color:var(--muted); margin-top:8px }
+  .container{max-width:1100px; margin:0 auto; padding:24px;}
+  header{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:18px;}
+  .brand{display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:12px; background:var(--glass);
+    backdrop-filter: blur(12px); box-shadow: var(--shadow);}
+  .brand canvas{width:40px; height:40px; border-radius:10px;}
+  .brand .name{font-weight:700} .brand .sub{color:var(--muted); font-size:.9rem}
+  .actions{display:flex; gap:10px; flex-wrap:wrap}
+  button{appearance:none; border:none; color:#fff; font-weight:600; padding:10px 14px; border-radius:12px; cursor:pointer;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow);}
+  button.secondary{background: linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.08)); color:var(--text);}
+  button:disabled{opacity:.6; cursor:not-allowed}
+  .card{margin-top:16px; border-radius:var(--radius); background:var(--glass); backdrop-filter: blur(18px);
+    box-shadow: var(--shadow); overflow:hidden;}
+  .toolbar{display:flex; gap:12px; flex-wrap:wrap; padding:12px; border-bottom:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));}
+  .pill{padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.08); color:var(--muted); font-size:.9rem}
+  .grid{display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; padding:16px;}
+  .panel{padding:12px; border-top:1px solid rgba(255,255,255,.06); display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));}
+  .tile{border-radius:12px; background:rgba(255,255,255,.06); box-shadow: var(--shadow); overflow:hidden;}
+  .tile .hd{padding:10px 12px; font-weight:600; border-bottom:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.25)}
+  .tile .bd{padding:12px}
+  .kv{display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px dashed rgba(255,255,255,.08)}
+  .kv:last-child{border-bottom:none}
+  .kv .k{color:var(--muted)} .kv .v{font-family:Consolas, monospace}
+  .list{display:flex; flex-direction:column; gap:6px}
+  .tag{display:inline-block; padding:6px 10px; border-radius:10px; background:rgba(255,255,255,.10); font-size:.9rem}
+  .toast{position:fixed; right:20px; bottom:20px; background:rgba(16,185,129,.15); color:#d1fae5; border:1px solid rgba(16,185,129,.45);
+    padding:10px 14px; border-radius:12px; backdrop-filter: blur(10px); box-shadow: var(--shadow); transform: translateY(20px);
+    opacity:0; pointer-events:none; transition:.35s ease;}
+  .toast.show{transform: translateY(0); opacity:1; pointer-events:auto}
+  .offline{position:fixed; left:20px; bottom:20px; background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.4);
+    padding:8px 12px; border-radius:10px; backdrop-filter: blur(10px);}
 </style>
 
-<!-- سيتم حقن أيقونة ومانيفست ديناميكياً عبر السكربت أدناه -->
 <link id="appIconLink" rel="icon" type="image/png" />
 <link id="manifestLink" rel="manifest" />
 
@@ -97,61 +59,44 @@
   <header>
     <div class="brand">
       <canvas id="appIconCanvas" width="128" height="128" aria-hidden="true"></canvas>
-      <div class="titles">
-        <div class="name">بطاقات اقتباس</div>
-        <div class="sub">PWA واحد-ملف | يعمل أوفلاين | تنزيل الصور</div>
+      <div>
+        <div class="name">فحص الجهاز والمتصفح</div>
+        <div class="sub">PWA واحد-ملف | تقرير تشخيصي | يعمل أوفلاين</div>
       </div>
     </div>
     <div class="actions">
-      <button id="installBtn" title="تثبيت التطبيق" disabled>تثبيت</button>
-      <button id="newQuoteBtn">اقتباس جديد</button>
-      <button id="downloadBtn" class="secondary">تنزيل الصورة</button>
+      <button id="installBtn" disabled>تثبيت</button>
+      <button id="scanBtn">فحص الآن</button>
+      <button id="copyMdBtn" class="secondary">نسخ التقرير Markdown</button>
+      <button id="downloadJsonBtn" class="secondary">تنزيل JSON</button>
     </div>
   </header>
 
   <div class="card">
-    <div class="canvas-wrap">
-      <canvas id="quoteCanvas" width="1200" height="630" aria-label="صورة الاقتباس"></canvas>
-    </div>
     <div class="toolbar">
-      <div class="group">
-        <span class="pill">نمط الخلفية:</span>
-        <select id="bgStyle">
-          <option value="gradient">تدرج زجاجي</option>
-          <option value="mesh">شبكة لونية</option>
-          <option value="solid">لون ثابت</option>
-        </select>
-      </div>
-      <div class="group">
-        <span class="pill">الحجم:</span>
-        <select id="sizeSel">
-          <option value="1200x630">1200×630 (Social)</option>
-          <option value="1024x1024">1024×1024</option>
-          <option value="1080x1920">1080×1920 (Story)</option>
-        </select>
-      </div>
-      <div class="group">
-        <span class="pill">خط:</span>
-        <select id="fontSel">
-          <option value="system">System UI</option>
-          <option value="serif">Serif</option>
-          <option value="mono">Monospace</option>
-        </select>
-      </div>
+      <span class="pill">هدف الشبكة:</span>
+      <input id="pingUrl" class="input" type="text" value="https://www.gstatic.com/generate_204" />
+      <span class="pill">محاولات قياس:</span>
+      <input id="triesInp" type="number" min="1" max="10" value="4" />
+    </div>
+
+    <div id="grid" class="grid" aria-live="polite">
+      <!-- تُملأ بالبلاطات بعد الفحص -->
+    </div>
+
+    <div class="panel">
+      <span class="pill">نصيحة: بعد التثبيت ستجد اختصار “فحص الآن” في قائمة التطبيقات.</span>
+      <span class="tag">Manifest + SW داخل نفس الملف</span>
+      <span class="tag">أيقونة Canvas ديناميكية</span>
     </div>
   </div>
-
-  <div class="shortcuts">
-    اختصارات PWA: فتح الاقتباس الجديد بسرعة، تنزيل الصورة، وضع غامق افتراضي. بعد التثبيت ستجدها في قائمة التطبيقات.
-  </div>
-  <div class="hint">نصيحة: يعمل أوفلاين بعد أول زيارة. أيقونة التطبيق مُولّدة من داخل الصفحة 👌</div>
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<div id="offline" class="offline" hidden>أنت أوفلاين الآن — لا تقلق، التطبيق يعمل دون اتصال.</div>
+<div id="offline" class="offline" hidden>أنت أوفلاين — سيحفظ التطبيق الصفحة ويعمل دون اتصال.</div>
 
 <script>
-/* ========= أدوات بسيطة ========= */
+/* ========= أدوات واجهة ========= */
 const $ = sel => document.querySelector(sel);
 const showToast = (msg, ok=true) => {
   const t = $('#toast');
@@ -164,200 +109,366 @@ const showToast = (msg, ok=true) => {
   showToast._timer = setTimeout(()=> t.classList.remove('show'), 3000);
 };
 
-/* ========= توليد أيقونة ديناميكية (Canvas -> DataURL) ========= */
+/* ========= أيقونة ديناميكية ========= */
 function generateIcon(size=192){
-  const c = $('#appIconCanvas');
-  c.width = size; c.height = size;
+  const c = $('#appIconCanvas'); c.width=size; c.height=size;
   const ctx = c.getContext('2d');
-
-  // خلفية متدرجة زجاجية
   const g = ctx.createLinearGradient(0,0,size,size);
-  g.addColorStop(0, '#0ea5e9');
-  g.addColorStop(1, '#22d3ee');
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,size,size);
+  g.addColorStop(0,'#0ea5e9'); g.addColorStop(1,'#22d3ee');
+  ctx.fillStyle = g; ctx.fillRect(0,0,size,size);
 
-  // دوائر براقة
-  for(let i=0;i<6;i++){
-    const r = Math.random()*size*0.18 + size*0.08;
-    const x = Math.random()*size;
-    const y = Math.random()*size;
-    const g2 = ctx.createRadialGradient(x,y,0,x,y,r);
-    g2.addColorStop(0, 'rgba(255,255,255,0.35)');
-    g2.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = g2;
-    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  // موجات رقمية
+  ctx.strokeStyle = 'rgba(255,255,255,.6)';
+  ctx.lineWidth = Math.max(2, size*0.02);
+  for(let i=0;i<5;i++){
+    ctx.beginPath();
+    for(let x=0; x<=size; x+=size/40){
+      const y = size*0.2 + i*size*0.12 + Math.sin(x/size*Math.PI*2 + i)*size*0.06;
+      if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
   }
-
-  // حرف زخرفي
-  ctx.fillStyle = 'rgba(255,255,255,.95)';
+  // رمز “ف”
+  ctx.fillStyle='rgba(255,255,255,.95)';
   ctx.font = `${Math.floor(size*0.5)}px serif`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = size*0.06;
-  ctx.fillText('ق', size/2, size/2);
-
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.shadowColor='rgba(0,0,0,.3)'; ctx.shadowBlur=size*0.06;
+  ctx.fillText('ف', size/2, size/2);
   return c.toDataURL('image/png');
 }
 
-/* ========= حقن الـ favicon والـ manifest من داخل الصفحة ========= */
-async function injectManifest(){
+/* ========= حقن Manifest ========= */
+function injectManifest(){
   const icon192 = generateIcon(192);
   const icon512 = generateIcon(512);
+  $('#appIconLink').href = icon192;
 
-  // favicon
-  const iconLink = $('#appIconLink');
-  iconLink.href = icon192;
-
-  // manifest كـ data:URL
   const manifest = {
-    name: "بطاقات اقتباس — واحد-ملف",
-    short_name: "اقتباس",
+    name: "فحص الجهاز والمتصفح — واحد-ملف",
+    short_name: "فحص",
     start_url: ".",
     scope: ".",
     display: "standalone",
     background_color: "#0b1220",
     theme_color: "#0ea5e9",
-    description: "تطبيق PWA زجاجي يولّد اقتباسات، يعمل أوفلاين وقابل للتثبيت.",
+    description: "تشخيص تقني شامل: WebGL/GPU، الشبكة، الذاكرة، التخزين، البطارية، ودعم APIّات.",
     icons: [
       { src: icon192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
       { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
     ],
     shortcuts: [
-      { name: "اقتباس جديد", url: "./?new=1", description: "توليد اقتباس جديد" },
-      { name: "تنزيل الصورة", url: "./?dl=1", description: "حفظ البطاقة كصورة" }
+      { name: "فحص الآن", url: "./?scan=1", description: "بدء الفحص مباشرة" },
+      { name: "نسخ التقرير", url: "./?md=1", description: "نسخ Markdown" }
     ]
   };
   const manifestStr = JSON.stringify(manifest);
   const manifestDataUrl = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(manifestStr)));
-  const manifestLink = $('#manifestLink');
-  manifestLink.href = manifestDataUrl;
-
+  $('#manifestLink').href = manifestDataUrl;
   showToast('تم تجهيز الأيقونة والمانيفست ✅');
 }
 
-/* ========= مولّد الاقتباسات والخلفيات ========= */
-const QUOTES = [
-  "ابدأ حيث أنت، واستخدم ما لديك، وافعل ما تستطيع.",
-  "التركيز يسبق الإنجاز.",
-  "تعلّم بسرعة، وكرّر بذكاء.",
-  "الوضوح قوة.",
-  "الاستمرارية تتفوق على الكمال.",
-  "اعمل على ما يهم حقًا."
-];
-
-function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
-
-function setCanvasSize(w,h){
-  const cn = $('#quoteCanvas');
-  cn.width = w; cn.height = h;
+/* ========= وظائف القياس ========= */
+async function measureLatency(url, tries=4){
+  const times = [];
+  for(let i=0;i<tries;i++){
+    const t0 = performance.now();
+    try{
+      // استخدام طلب بدون كاش
+      await fetch(url, {cache:'no-store', mode:'cors'});
+      const t1 = performance.now();
+      times.push(t1 - t0);
+    }catch(e){
+      times.push(null);
+    }
+  }
+  const valid = times.filter(t=>t!==null);
+  const avg = valid.length ? valid.reduce((a,b)=>a+b,0)/valid.length : null;
+  const min = valid.length ? Math.min(...valid) : null;
+  const max = valid.length ? Math.max(...valid) : null;
+  return { url, tries, times, avg, min, max };
+}
+function estimateDownlink(){
+  const c = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+  if(!c) return null;
+  return { downlink: c.downlink, rtt: c.rtt, effectiveType: c.effectiveType, saveData: c.saveData || false };
+}
+async function getBattery(){
+  if(!navigator.getBattery) return null;
+  try{
+    const b = await navigator.getBattery();
+    return { charging: b.charging, level: Math.round(b.level*100), chargingTime: b.chargingTime, dischargingTime: b.dischargingTime };
+  }catch{ return null }
+}
+function getMemory(){
+  const m = performance && performance.memory;
+  if(!m) return null;
+  return {
+    jsHeapSizeLimit: m.jsHeapSizeLimit,
+    totalJSHeapSize: m.totalJSHeapSize,
+    usedJSHeapSize: m.usedJSHeapSize
+  };
+}
+async function getStorageEstimate(){
+  if(!navigator.storage || !navigator.storage.estimate) return null;
+  try{
+    const e = await navigator.storage.estimate();
+    return { quota: e.quota || null, usage: e.usage || null };
+  }catch{ return null }
+}
+function getWebGLInfo(){
+  try{
+    const cn = document.createElement('canvas');
+    const gl = cn.getContext('webgl') || cn.getContext('experimental-webgl');
+    if(!gl) return { supported:false };
+    const dbgInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    const vendor = dbgInfo ? gl.getParameter(dbgInfo.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR);
+    const renderer = dbgInfo ? gl.getParameter(dbgInfo.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+    return {
+      supported:true,
+      vendor, renderer,
+      version: gl.getParameter(gl.VERSION),
+      shading: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+      maxTexSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+      maxTextureImageUnits: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
+      maxCubeMapSize: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)
+    };
+  }catch(e){
+    return { supported:false, error: String(e) };
+  }
+}
+function getAPISupport(){
+  const apis = {
+    webgl: !!(document.createElement('canvas').getContext('webgl')),
+    webgpu: !!navigator.gpu,
+    webrtc: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+    bluetooth: !!navigator.bluetooth,
+    usb: !!navigator.usb,
+    serial: !!navigator.serial,
+    hid: !!navigator.hid,
+    nfc: !!(navigator.nfc || (window.NDEFReader)),
+    wakeLock: !!navigator.wakeLock,
+    share: !!navigator.share,
+    clipboard: !!navigator.clipboard,
+    localFonts: !!(window.queryLocalFonts),
+    fileSystemAccess: !!(window.showOpenFilePicker),
+    codecs_av1: !!(window.VideoDecoder && VideoDecoder.isConfigSupported) // مؤشر بسيط
+  };
+  return apis;
+}
+async function getPermissions(){
+  if(!navigator.permissions) return null;
+  const names = ['geolocation','notifications','camera','microphone','clipboard-read','clipboard-write'];
+  const res = {};
+  for(const n of names){
+    try{
+      const st = await navigator.permissions.query({name:n});
+      res[n] = st.state;
+    }catch{
+      res[n] = 'unknown';
+    }
+  }
+  return res;
 }
 
-function drawBackground(ctx, w, h, style){
-  if(style==='solid'){
-    ctx.fillStyle = '#0b1220'; ctx.fillRect(0,0,w,h);
-  }else if(style==='mesh'){
-    const grad = ctx.createLinearGradient(0,0,w,h);
-    grad.addColorStop(0, '#0ea5e9'); grad.addColorStop(1, '#22d3ee');
-    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
-    for(let i=0;i<8;i++){
-      const rx = Math.random()*w, ry = Math.random()*h;
-      const r = Math.random()*Math.min(w,h)*0.25;
-      const g = ctx.createRadialGradient(rx,ry,0,rx,ry,r);
-      g.addColorStop(0,'rgba(255,255,255,.15)');
-      g.addColorStop(1,'rgba(255,255,255,0)');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(rx,ry,r,0,Math.PI*2); ctx.fill();
-    }
+/* ========= عرض النتائج ========= */
+function kv(key, val){
+  const wrap = document.createElement('div'); wrap.className='kv';
+  const k = document.createElement('div'); k.className='k'; k.textContent = key;
+  const v = document.createElement('div'); v.className='v'; v.textContent = val;
+  wrap.appendChild(k); wrap.appendChild(v);
+  return wrap;
+}
+function tile(title, bodyEl){
+  const t = document.createElement('div'); t.className='tile';
+  const hd = document.createElement('div'); hd.className='hd'; hd.textContent = title;
+  const bd = document.createElement('div'); bd.className='bd'; bd.appendChild(bodyEl);
+  t.appendChild(hd); t.appendChild(bd); return t;
+}
+function renderReport(rep){
+  const grid = $('#grid'); grid.innerHTML='';
+  // عامة
+  const gBody = document.createElement('div');
+  gBody.appendChild(kv('المتصفح', navigator.userAgent));
+  gBody.appendChild(kv('المنصة', navigator.platform || 'غير معروف'));
+  gBody.appendChild(kv('اللغة', navigator.language));
+  gBody.appendChild(kv('أونلاين', String(navigator.onLine)));
+  gBody.appendChild(kv('شاشة', `${window.screen.width}×${window.screen.height}`));
+  grid.appendChild(tile('عام', gBody));
+
+  // الشبكة
+  const nBody = document.createElement('div');
+  const net = rep.network;
+  if(net) {
+    nBody.appendChild(kv('Downlink (Mbps تقديري)', net.downlink ?? 'N/A'));
+    nBody.appendChild(kv('RTT (ms)', net.rtt ?? 'N/A'));
+    nBody.appendChild(kv('نوع الشبكة', net.effectiveType ?? 'N/A'));
+    nBody.appendChild(kv('توفير البيانات', String(net.saveData)));
+  } else {
+    nBody.appendChild(kv('حالة', 'لا تتوفر معلومات اتصال'));
+  }
+  const ping = rep.latency;
+  if(ping){
+    nBody.appendChild(kv('المتوسط (ms)', ping.avg !== null ? ping.avg.toFixed(1) : 'فشل'));
+    nBody.appendChild(kv('الأدنى (ms)', ping.min !== null ? ping.min.toFixed(1) : 'فشل'));
+    nBody.appendChild(kv('الأعلى (ms)', ping.max !== null ? ping.max.toFixed(1) : 'فشل'));
+  }
+  grid.appendChild(tile('الشبكة', nBody));
+
+  // WebGL/GPU
+  const wBody = document.createElement('div');
+  const w = rep.webgl;
+  wBody.appendChild(kv('مدعوم', String(!!(w && w.supported))));
+  if(w && w.supported){
+    wBody.appendChild(kv('Vendor', w.vendor));
+    wBody.appendChild(kv('Renderer', w.renderer));
+    wBody.appendChild(kv('Version', w.version));
+    wBody.appendChild(kv('GLSL', w.shading));
+    wBody.appendChild(kv('Max Texture Size', w.maxTexSize));
+    wBody.appendChild(kv('Texture Units', w.maxTextureImageUnits));
+  }
+  grid.appendChild(tile('WebGL/GPU', wBody));
+
+  // الذاكرة والتخزين
+  const mBody = document.createElement('div');
+  const mem = rep.memory;
+  if(mem){
+    mBody.appendChild(kv('JS Heap Limit', mem.jsHeapSizeLimit));
+    mBody.appendChild(kv('Total JS Heap', mem.totalJSHeapSize));
+    mBody.appendChild(kv('Used JS Heap', mem.usedJSHeapSize));
   }else{
-    const grad = ctx.createLinearGradient(0,0,w,h);
-    grad.addColorStop(0, '#0f1b33'); grad.addColorStop(1, '#0b1220');
-    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
-    // طبقة زجاجية لطيفة
-    for(let i=0;i<6;i++){
-      const gx = Math.random()*w, gy = Math.random()*h;
-      const r = Math.random()*Math.min(w,h)*0.18 + Math.min(w,h)*0.08;
-      const g = ctx.createRadialGradient(gx,gy,0,gx,gy,r);
-      g.addColorStop(0,'rgba(255,255,255,.10)');
-      g.addColorStop(1,'rgba(255,255,255,0)');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(gx,gy,r,0,Math.PI*2); ctx.fill();
-    }
+    mBody.appendChild(kv('الذاكرة', 'غير متاح'));
   }
+  const st = rep.storage;
+  if(st){
+    mBody.appendChild(kv('الحصة (bytes)', st.quota ?? 'N/A'));
+    mBody.appendChild(kv('الاستخدام (bytes)', st.usage ?? 'N/A'));
+  }else{
+    mBody.appendChild(kv('التخزين', 'غير متاح'));
+  }
+  grid.appendChild(tile('الذاكرة والتخزين', mBody));
+
+  // البطارية
+  const bBody = document.createElement('div');
+  const bat = rep.battery;
+  if(bat){
+    bBody.appendChild(kv('الشحن', String(bat.charging)));
+    bBody.appendChild(kv('المستوى (%)', String(bat.level)));
+    bBody.appendChild(kv('زمن الشحن (ث)', String(bat.chargingTime)));
+    bBody.appendChild(kv('زمن التفريغ (ث)', String(bat.dischargingTime)));
+  }else{
+    bBody.appendChild(kv('حالة', 'معلومات البطارية غير متاحة'));
+  }
+  grid.appendChild(tile('البطارية', bBody));
+
+  // دعم APIّات
+  const aBody = document.createElement('div'); aBody.className='list';
+  Object.entries(rep.apis).forEach(([k,v])=>{
+    const el = document.createElement('div'); el.className='kv';
+    const key = document.createElement('div'); key.className='k'; key.textContent = k;
+    const val = document.createElement('div'); val.className='v'; val.textContent = String(v);
+    el.appendChild(key); el.appendChild(val); aBody.appendChild(el);
+  });
+  grid.appendChild(tile('دعم APIّات', aBody));
+
+  // صلاحيات
+  const pBody = document.createElement('div');
+  const perms = rep.permissions;
+  if(perms){
+    Object.entries(perms).forEach(([k,v])=> pBody.appendChild(kv(k, v)));
+  }else{
+    pBody.appendChild(kv('حالة', 'واجهة الصلاحيات غير متاحة'));
+  }
+  grid.appendChild(tile('الصلاحيات', pBody));
 }
 
-function drawQuote(){
-  const cn = $('#quoteCanvas');
-  const ctx = cn.getContext('2d');
-  const style = $('#bgStyle').value;
-  const fontSel = $('#fontSel').value;
+/* ========= توليد التقرير ========= */
+async function scan(){
+  showToast('بدء الفحص…');
+  const url = $('#pingUrl').value.trim() || 'https://www.gstatic.com/generate_204';
+  const tries = Math.max(1, Math.min(10, Number($('#triesInp').value)||4));
 
-  drawBackground(ctx, cn.width, cn.height, style);
+  const [latency, network, battery, memory, storage, webgl, apis, permissions] = await Promise.all([
+    measureLatency(url, tries),
+    Promise.resolve(estimateDownlink()),
+    getBattery(),
+    Promise.resolve(getMemory()),
+    getStorageEstimate(),
+    Promise.resolve(getWebGLInfo()),
+    Promise.resolve(getAPISupport()),
+    getPermissions()
+  ]);
 
-  const pad = Math.round(cn.width * 0.08);
-  const maxWidth = cn.width - pad*2;
-
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const fontBase = fontSel==='serif' ? 'Georgia, serif' :
-                   fontSel==='mono' ? 'Consolas, monospace' :
-                   'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu';
-  const titleSize = Math.round(cn.height*0.08);
-  const bodySize = Math.round(cn.height*0.06);
-
-  // عنوان صغير
-  ctx.font = `bold ${Math.round(cn.height*0.035)}px ${fontBase}`;
-  ctx.fillStyle = 'rgba(255,255,255,.75)';
-  ctx.fillText('بطاقة اقتباس', cn.width/2, Math.round(cn.height*0.12));
-
-  // الاقتباس
-  const quote = pick(QUOTES);
-  ctx.font = `bold ${bodySize}px ${fontBase}`;
-  ctx.fillStyle = '#ffffff';
-  ctx.shadowColor = 'rgba(0,0,0,.35)';
-  ctx.shadowBlur = Math.round(cn.height*0.012);
-
-  // التفاف بسيط للنص
-  function wrapText(text, x, y, maxW, lineHeight){
-    const words = text.split(' ');
-    let line = '';
-    const lines = [];
-    for(let w of words){
-      const test = line ? line + ' ' + w : w;
-      const metrics = ctx.measureText(test);
-      if(metrics.width > maxW && line){
-        lines.push(line); line = w;
-      }else line = test;
-    }
-    if(line) lines.push(line);
-    lines.forEach((l,i)=>{
-      ctx.fillText(l, x, y + i*lineHeight);
-    });
-  }
-  wrapText(quote, cn.width/2, cn.height/2, maxWidth, Math.round(bodySize*1.25));
-
-  // توقيع/هامش
-  ctx.shadowBlur = 0;
-  ctx.font = `600 ${Math.round(cn.height*0.032)}px ${fontBase}`;
-  ctx.fillStyle = 'rgba(255,255,255,.75)';
-  ctx.fillText('— يومك المنتج يبدأ بكلمة', cn.width/2, cn.height - Math.round(cn.height*0.10));
+  const report = {
+    timestamp: new Date().toISOString(),
+    urlTarget: url,
+    latency, network, battery, memory, storage, webgl, apis, permissions
+  };
+  window._report = report;
+  renderReport(report);
+  showToast('اكتمل الفحص ✅');
+  return report;
 }
 
-/* ========= تنزيل الصورة ========= */
-function downloadImage(){
-  const cn = $('#quoteCanvas');
-  const url = cn.toDataURL('image/png');
+/* ========= تصدير JSON / Markdown ========= */
+function downloadJson(){
+  const rep = window._report;
+  if(!rep){ showToast('نفّذ فحصاً أولاً', false); return; }
+  const blob = new Blob([JSON.stringify(rep, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   const ts = new Date().toISOString().replace(/[:.]/g,'-');
-  a.href = url; a.download = `quote-${ts}.png`;
+  a.href = url; a.download = `diagnostics-${ts}.json`;
   document.body.appendChild(a); a.click(); a.remove();
-  showToast('تم تنزيل الصورة ✅');
+  setTimeout(()=> URL.revokeObjectURL(url), 3000);
+  showToast('تم تنزيل JSON ✅');
+}
+function toMarkdown(rep){
+  const lines = [];
+  lines.push(`# تقرير فحص الجهاز والمتصفح`);
+  lines.push(`- الوقت: ${rep.timestamp}`);
+  lines.push(`- هدف الشبكة: ${rep.urlTarget}`);
+  lines.push(``);
+  lines.push(`## الشبكة`);
+  const lat = rep.latency;
+  lines.push(`- المتوسط: ${lat.avg!==null?lat.avg.toFixed(1):'فشل'} ms | الأدنى: ${lat.min!==null?lat.min.toFixed(1):'فشل'} | الأعلى: ${lat.max!==null?lat.max.toFixed(1):'فشل'}`);
+  const net = rep.network || {};
+  lines.push(`- Downlink: ${net.downlink ?? 'N/A'} Mbps | RTT: ${net.rtt ?? 'N/A'} ms | النوع: ${net.effectiveType ?? 'N/A'} | توفير البيانات: ${net.saveData ?? 'N/A'}`);
+  lines.push(``);
+  lines.push(`## WebGL/GPU`);
+  const w = rep.webgl || {}; lines.push(`- مدعوم: ${w.supported ? 'نعم' : 'لا'}`);
+  if(w.supported){
+    lines.push(`- Vendor: ${w.vendor}`); lines.push(`- Renderer: ${w.renderer}`); lines.push(`- Version: ${w.version}`);
+    lines.push(`- GLSL: ${w.shading}`); lines.push(`- Max Texture Size: ${w.maxTexSize}`); lines.push(`- Texture Units: ${w.maxTextureImageUnits}`);
+  }
+  lines.push(``);
+  lines.push(`## الذاكرة والتخزين`);
+  const mem = rep.memory || {};
+  lines.push(`- JS Heap Used: ${mem.usedJSHeapSize ?? 'N/A'} / Total: ${mem.totalJSHeapSize ?? 'N/A'} (Limit: ${mem.jsHeapSizeLimit ?? 'N/A'})`);
+  const st = rep.storage || {};
+  lines.push(`- الحصة: ${st.quota ?? 'N/A'} | الاستخدام: ${st.usage ?? 'N/A'}`);
+  lines.push(``);
+  lines.push(`## البطارية`);
+  const bat = rep.battery || {};
+  lines.push(`- شحن: ${bat.charging ?? 'N/A'} | مستوى: ${bat.level ?? 'N/A'}% | زمن الشحن: ${bat.chargingTime ?? 'N/A'} | التفريغ: ${bat.dischargingTime ?? 'N/A'}`);
+  lines.push(``);
+  lines.push(`## دعم APIّات`);
+  Object.entries(rep.apis || {}).forEach(([k,v])=> lines.push(`- ${k}: ${v}`));
+  lines.push(``);
+  lines.push(`## صلاحيات`);
+  Object.entries(rep.permissions || {}).forEach(([k,v])=> lines.push(`- ${k}: ${v}`));
+  return lines.join('\n');
+}
+function copyMarkdown(){
+  const rep = window._report;
+  if(!rep){ showToast('نفّذ فحصاً أولاً', false); return; }
+  const md = toMarkdown(rep);
+  navigator.clipboard.writeText(md).then(()=> showToast('نُسخ التقرير Markdown ✅'));
 }
 
-/* ========= حجم الق_canvas ========= */
-function applySize(){
-  const val = $('#sizeSel').value; // مثل 1200x630
-  const [w,h] = val.split('x').map(Number);
-  setCanvasSize(w,h);
-  drawQuote();
-}
+/* ========= حالة الاتصال ========= */
+function updateOnline(){ $('#offline').hidden = navigator.onLine; }
+window.addEventListener('online', updateOnline);
+window.addEventListener('offline', updateOnline);
 
 /* ========= تثبيت PWA ========= */
 let deferredPrompt = null;
@@ -368,39 +479,30 @@ window.addEventListener('beforeinstallprompt', (e)=>{
   showToast('جاهز للتثبيت — اضغط زر تثبيت');
 });
 $('#installBtn').addEventListener('click', async ()=>{
-  if(!deferredPrompt){ return }
+  if(!deferredPrompt) return;
   deferredPrompt.prompt();
   const { outcome } = await deferredPrompt.userChoice;
   deferredPrompt = null;
   $('#installBtn').disabled = true;
-  showToast(outcome==='accepted' ? 'تم التثبيت 🎉' : 'ألغيت التثبيت');
+  showToast(outcome==='accepted' ? 'تم التثبيت 🎉' : 'أُلغي التثبيت');
 });
-
-/* ========= مؤشرات الاتصال ========= */
-function updateOnline(){
-  const off = $('#offline');
-  if(navigator.onLine){ off.hidden = true; } else { off.hidden = false; }
-}
-window.addEventListener('online', updateOnline);
-window.addEventListener('offline', updateOnline);
 
 /* ========= Service Worker واحد-ملف ========= */
 async function registerSW(){
   const swCode = `
-    const CACHE = 'quote-pwa-cache-v1';
-    const CORE = ['.']; // الصفحة نفسها
-    self.addEventListener('install', (e)=>{
+    const CACHE = 'diag-pwa-cache-v1';
+    const CORE = ['.'];
+    self.addEventListener('install', e=>{
       e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));
       self.skipWaiting();
     });
-    self.addEventListener('activate', (e)=>{
+    self.addEventListener('activate', e=>{
       e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
       self.clients.claim();
     });
-    self.addEventListener('fetch', (e)=>{
+    self.addEventListener('fetch', e=>{
       const req = e.request;
       const url = new URL(req.url);
-      // إستراتيجية: Try cache first for same-origin GETs
       if(req.method==='GET' && url.origin===self.location.origin){
         e.respondWith(
           caches.match(req).then(res=>{
@@ -417,36 +519,29 @@ async function registerSW(){
   const blob = new Blob([swCode], {type:'application/javascript'});
   const swUrl = URL.createObjectURL(blob);
   try{
-    const reg = await navigator.serviceWorker.register(swUrl, { scope: '.' });
+    await navigator.serviceWorker.register(swUrl, { scope: '.' });
     showToast('Service Worker جاهز 🛡️');
-    // تنظيف URL blob بعد التسجيل
     setTimeout(()=> URL.revokeObjectURL(swUrl), 4000);
   }catch(err){
     console.error(err);
-    showToast('تعذر تسجيل Service Worker', false);
+    showToast('تعذّر تسجيل Service Worker', false);
   }
 }
 
 /* ========= تهيئة ========= */
 function init(){
   injectManifest();
-  applySize();
-  drawQuote();
   updateOnline();
   registerSW();
 
-  $('#newQuoteBtn').addEventListener('click', drawQuote);
-  $('#downloadBtn').addEventListener('click', downloadImage);
-  $('#bgStyle').addEventListener('change', drawQuote);
-  $('#fontSel').addEventListener('change', drawQuote);
-  $('#sizeSel').addEventListener('change', applySize);
+  $('#scanBtn').addEventListener('click', scan);
+  $('#copyMdBtn').addEventListener('click', copyMarkdown);
+  $('#downloadJsonBtn').addEventListener('click', downloadJson);
 
-  // معالجة الاختصارات من الـ manifest
   const params = new URLSearchParams(location.search);
-  if(params.has('new')) drawQuote();
-  if(params.has('dl')) downloadImage();
+  if(params.has('scan')) scan();
+  if(params.has('md')) copyMarkdown();
 }
-
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
