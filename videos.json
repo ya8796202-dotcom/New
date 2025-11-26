@@ -1,22 +1,22 @@
 [
   {
     "id": 1,
-    "title": "فيديو من جهازي 1",
-    "channel": "قناتي",
+    "title": "مراجعة مشروع أردوينو",
+    "channel": "قناة ياسر",
     "views": "120 مشاهدة",
     "age": "منذ يومين",
-    "url": "videos/video1.mp4",
-    "thumb": "thumbs/video1.jpg",
-    "category": "الكل"
+    "url": "videos/arduino.mp4",
+    "thumb": "thumbs/arduino.jpg",
+    "category": "تعليمي"
   },
   {
     "id": 2,
-    "title": "فيديو من جهازي 2",
-    "channel": "قناتي",
+    "title": "تجربة فيديو موسيقى",
+    "channel": "قناة ياسر",
     "views": "85 مشاهدة",
     "age": "منذ أسبوع",
-    "url": "videos/video2.mp4",
-    "thumb": "thumbs/video2.jpg",
+    "url": "videos/music.mp4",
+    "thumb": "thumbs/music.jpg",
     "category": "موسيقى"
   }
 ]
