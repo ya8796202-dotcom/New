@@ -1,86 +1,62 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>محرر فيديو زجاجي — ملف واحد</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>محرر فيديو زجاجي — ملف واحد (محدث)</title>
+<link rel="manifest" href="/manifest.json">
 <style>
   :root{
-    --bg: #0a0f1f;
-    --fg: #eaf2ff;
-    --card: rgba(255,255,255,0.08);
-    --border: rgba(255,255,255,0.16);
-    --accent: #4ca7ff;
-    --accent2:#7bd7ff;
+    --bg:#0a0f1f; --fg:#eaf2ff; --card:rgba(255,255,255,0.08);
+    --border:rgba(255,255,255,0.16); --accent:#4ca7ff; --accent2:#7bd7ff;
     --glass: blur(18px) saturate(120%) contrast(105%);
   }
   @media (prefers-color-scheme: light){
-    :root{ --bg:#e9f1ff; --fg:#0c1730; --card: rgba(255,255,255,0.55); --border: rgba(16,50,90,0.12); }
+    :root{ --bg:#e9f1ff; --fg:#0c1730; --card:rgba(255,255,255,0.55); --border:rgba(16,50,90,0.12); }
   }
-  *{ box-sizing:border-box }
+  *{box-sizing:border-box}
   body{
     margin:0; font-family: ui-rounded, system-ui, "Segoe UI", Arial;
     background:
       radial-gradient(1200px 600px at 8% 12%, #0c1e44, transparent 60%),
       radial-gradient(1000px 500px at 92% 0%, #0a314f, transparent 50%),
-      linear-gradient(180deg, var(--bg), var(--bg));
-    color: var(--fg);
-    min-height:100vh;
+      linear-gradient(180deg,var(--bg),var(--bg));
+    color:var(--fg); min-height:100vh;
   }
-  header{
-    padding:18px 12px; text-align:center; position:sticky; top:0; z-index:10;
-    background:linear-gradient(90deg, #4ca7ff22, #7bd7ff12);
-    border-bottom:1px solid #ffffff1a;
-  }
+  header{ padding:18px 12px; text-align:center; position:sticky; top:0; z-index:10;
+    background:linear-gradient(90deg,#4ca7ff22,#7bd7ff12); border-bottom:1px solid #ffffff1a; }
   h1{ margin:0; font-size:20px; letter-spacing:.3px }
   .container{ max-width:1100px; margin:22px auto; padding:0 14px }
-  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
-  .card{
-    background: var(--card);
-    backdrop-filter: var(--glass);
-    -webkit-backdrop-filter: var(--glass);
-    border:1px solid var(--border);
-    border-radius:16px; padding:16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.22);
-  }
+  .card{ background:var(--card); backdrop-filter:var(--glass); -webkit-backdrop-filter:var(--glass);
+    border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,0.22); }
   label{ font-size:13px; color:#cfe5ff; margin-bottom:6px; display:block }
   input[type="file"], select, input[type="number"], input[type="range"], input[type="text"], button{
     width:100%; padding:10px 12px; border-radius:12px; border:1px solid #bfe1ff33;
-    background:linear-gradient(180deg,#091427,#0c1830);
-    color:var(--fg); outline:none;
+    background:linear-gradient(180deg,#091427,#0c1830); color:var(--fg); outline:none;
   }
-  input[type="range"]{ accent-color: var(--accent) }
-  button{
-    cursor:pointer; font-weight:700; letter-spacing:.3px;
-    background:linear-gradient(180deg, var(--accent), var(--accent2));
-    color:#071120; border-color:#4ca7ff; box-shadow: 0 6px 18px #4ca7ff44;
-  }
-  button.secondary{
-    background:linear-gradient(180deg,#14223f,#1b2a4f); color:#d7e7ff; border-color:#2a3f66;
-  }
+  input[type="range"]{ accent-color:var(--accent) }
+  button{ cursor:pointer; font-weight:700; letter-spacing:.3px;
+    background:linear-gradient(180deg,var(--accent),var(--accent2)); color:#071120; border-color:#4ca7ff; box-shadow:0 6px 18px #4ca7ff44; }
+  button.secondary{ background:linear-gradient(180deg,#14223f,#1b2a4f); color:#d7e7ff; border-color:#2a3f66; }
   button:disabled{ opacity:.55; cursor:not-allowed }
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
   .row-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px }
   .help{ font-size:12px; color:#aac8e9 }
-  .preview{ display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start }
-  video, canvas{
-    width:100%; max-height:420px; background:#000; border-radius:16px; border:1px solid #28466c66;
-  }
-  .badge{ display:inline-block; background:#0f2a4f99; border:1px solid #4ca7ff55; color:#bde1ff;
-          padding:4px 8px; border-radius:999px; font-size:12px }
+  video, canvas{ width:100%; max-height:420px; background:#000; border-radius:16px; border:1px solid #28466c66; }
+  .badge{ display:inline-block; background:#0f2a4f99; border:1px solid #4ca7ff55; color:#bde1ff; padding:4px 8px; border-radius:999px; font-size:12px }
   .stack{ display:flex; gap:10px; flex-wrap:wrap }
   .small{ font-size:12px; color:#a9c8e9 }
   .out{ font-size:12px; background:#0c172f; border:1px dashed #3a5a86; padding:8px; border-radius:12px }
-  .pill{ display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px;
-         background:#123155aa; border:1px solid #4ca7ff33; color:#cfe5ff; font-size:12px; text-decoration:none }
+  .pill{ display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px; background:#123155aa; border:1px solid #4ca7ff33; color:#cfe5ff; font-size:12px; text-decoration:none }
   .thumbs img{ width:120px; border-radius:12px; border:1px solid #28466c66 }
+  #installBtn{ display:none; padding:8px 12px; border-radius:10px; background:#2ea0ff; color:#041226; border:none; font-weight:700; cursor:pointer; }
   footer{ text-align:center; padding:14px; color:#9fbfe6; font-size:13px }
 </style>
 </head>
 <body>
 <header>
-  <h1>محرر فيديو زجاجي — إضافة موسيقى وصور وتأثيرات وتصدير WebM</h1>
-  <div class="small">جاهز للتثبيت كـ PWA و للرفع على GitHub Pages — ملف واحد فقط</div>
+  <h1>محرر فيديو زجاجي — نسخة محدثة</h1>
+  <div class="small">قابل للتثبيت، تحسين أداء التصدير، تنزيل آمن</div>
 </header>
 
 <div class="container">
@@ -156,13 +132,39 @@
         </select>
       </div>
       <div>
-        <label>شدة التوهج التلوين</label>
+        <label>جودة التصدير</label>
+        <select id="quality">
+          <option value="full">Full (أصلية)</option>
+          <option value="720">720p (أسرع)</option>
+          <option value="480">480p (أسرع جداً)</option>
+        </select>
+      </div>
+      <div>
+        <label>FPS للتصدير</label>
+        <select id="fps">
+          <option>30</option>
+          <option selected>24</option>
+          <option>20</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row-3" style="margin-top:10px">
+      <div>
+        <label>شدة التوهج/التلوين</label>
         <input id="filterExtra" type="range" min="0" max="1" step="0.01" value="0">
-        <div class="help">يُضاف فوق الفلتر المختار (Tint/Glow)</div>
       </div>
       <div>
         <label>لون التوهج</label>
         <input id="glowColor" type="text" value="#4ca7ff">
+      </div>
+      <div>
+        <label>bitsPerSecond (تقريبي)</label>
+        <select id="bits">
+          <option value="2500000" selected>2.5 Mbps (توازن)</option>
+          <option value="1500000">1.5 Mbps (أصغر)</option>
+          <option value="4000000">4 Mbps (جودة أعلى)</option>
+        </select>
       </div>
     </div>
 
@@ -184,9 +186,9 @@
         <select id="imageAnim">
           <option value="none">بدون</option>
           <option value="slide">انزلاق</option>
-          <option value="float">تعويم بسيط</option>
-          <option value="spin">دوران خفيف</option>
-          <option value="zoom">تكبير تدريجي</option>
+          <option value="float">تعويم</option>
+          <option value="spin">دوران</option>
+          <option value="zoom">تكبير</option>
         </select>
       </div>
       <div>
@@ -203,11 +205,12 @@
       <button id="snapshot" class="secondary">التقاط صورة</button>
       <button id="export">بدء التصدير</button>
       <a id="download" class="pill" style="display:none" download="output.webm">⬇️ تنزيل الفيديو</a>
+      <button id="installBtn">تثبيت التطبيق</button>
       <span class="badge" id="status">جاهز</span>
     </div>
   </div>
 
-  <div class="card preview">
+  <div class="card preview" style="margin-top:14px">
     <div style="flex:1;min-width:280px">
       <label>معاينة الفيديو</label>
       <video id="video" controls playsinline></video>
@@ -220,18 +223,17 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="small">
-      حدود المتصفح: الإخراج WebM عبر MediaRecorder (VP8/VP9). للمخرجات MP4 أو مونتاج متعدد المقاطع استخدم لاحقًا ffmpeg.wasm.
-    </div>
+  <div class="card" style="margin-top:14px">
+    <div class="small">ملاحظة: التصدير ينتج WebM (VP8/VP9). لملفات MP4 استخدمي تحويل خارجي أو ffmpeg.wasm لاحقًا.</div>
   </div>
 
 </div>
 
-<footer>نسخة ملف واحد جاهزة للرفع على GitHub Pages • يمكنك استبدال الأيقونة المدمجة بصورة شعارك لاحقًا</footer>
+<footer>احفظ الملف باسم index.html وارفعه مع manifest.json و sw.js و أيقونات في جذر المستودع</footer>
 
 <script>
 (function(){
+  // عناصر
   const els = {
     videoFile: document.getElementById('videoFile'),
     audioFile: document.getElementById('audioFile'),
@@ -256,28 +258,35 @@
     status: document.getElementById('status'),
     log: document.getElementById('log'),
     thumbs: document.getElementById('thumbs'),
+    quality: document.getElementById('quality'),
+    fps: document.getElementById('fps'),
+    bits: document.getElementById('bits'),
+    installBtn: document.getElementById('installBtn')
   };
 
   let audio = null, audioCtx=null, gainNode=null, audioSource=null;
   let overlayImg = null;
   let recorder = null, recordedBlobs=[], exporting=false;
+  let lastOutputUrl = null;
+  let deferredPrompt = null;
 
   function log(msg){ const p=document.createElement('div'); p.textContent=msg; els.log.appendChild(p); }
-  function setStatus(s){ els.status.textContent=s; }
+  function setStatus(s){ els.status.textContent = s; }
 
-  // Load video
+  // تحميل الفيديو
   els.videoFile.addEventListener('change', e=>{
     const file = e.target.files?.[0]; if(!file) return;
     const url = URL.createObjectURL(file);
     els.video.src = url; els.video.load();
     els.video.onloadedmetadata = ()=>{
+      // افتراضي: اضبط canvas على أبعاد الفيديو الأصلية
       els.canvas.width = els.video.videoWidth || 1280;
       els.canvas.height = els.video.videoHeight || 720;
       setStatus('فيديو جاهز: ' + Math.round(els.video.duration) + ' ثانية');
     };
   });
 
-  // Load audio
+  // تحميل الصوت
   els.audioFile.addEventListener('change', e=>{
     const file = e.target.files?.[0]; if(!file) return;
     if(audio){ audio.pause(); audio=null; }
@@ -286,7 +295,7 @@
     log('تم تحميل الموسيقى');
   });
 
-  // Load overlay image
+  // تحميل صورة Overlay
   els.imageFile.addEventListener('change', e=>{
     const file = e.target.files?.[0]; if(!file) return;
     const url = URL.createObjectURL(file);
@@ -294,11 +303,11 @@
     overlayImg.onload = ()=> log('تم تحميل الصورة كـ Overlay');
   });
 
-  // Snapshot
+  // لقطة سريعة
   els.snapshot.addEventListener('click', ()=>{
     if(!els.video.src) return;
     const ctx = els.canvas.getContext('2d');
-    drawCompositeFrame(ctx, els.video, els.canvas, currentTime());
+    drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime);
     els.canvas.toBlob((blob)=>{
       const img = document.createElement('img');
       img.src = URL.createObjectURL(blob);
@@ -306,64 +315,70 @@
     }, 'image/png');
   });
 
-  function currentTime(){ return els.video.currentTime || 0; }
+  // ضبط حجم canvas حسب الجودة
+  function setCanvasSizeForQuality(q){
+    const vW = els.video.videoWidth || 1280;
+    const vH = els.video.videoHeight || 720;
+    if(q === '720'){
+      const scale = Math.min(1, 1280 / Math.max(vW, vH));
+      els.canvas.width = Math.round(vW * scale);
+      els.canvas.height = Math.round(vH * scale);
+    } else if(q === '480'){
+      const scale = Math.min(1, 854 / Math.max(vW, vH));
+      els.canvas.width = Math.round(vW * scale);
+      els.canvas.height = Math.round(vH * scale);
+    } else {
+      els.canvas.width = vW; els.canvas.height = vH;
+    }
+  }
 
-  // Composite frame: video + filter + glow + overlays + transitions
+  // رسم الإطار المركب
   function drawCompositeFrame(ctx, video, canvas, t){
-    const w=canvas.width, h=canvas.height;
-
-    // Transition alpha (fade-in/out)
-    const start=parseFloat(els.startSec?.value)||0;
-    const end=parseFloat(els.endSec?.value)||video.duration;
-    const dur=Math.max(0.001, end-start);
-    const tr=document.getElementById('videoTransition').value;
-    let alpha=1;
-    if(tr==='fade'){
+    const w = canvas.width, h = canvas.height;
+    // انتقال
+    const start = parseFloat(document.getElementById('startSec')?.value || 0) || 0;
+    const end = parseFloat(document.getElementById('endSec')?.value || video.duration) || video.duration;
+    const dur = Math.max(0.001, end - start);
+    const tr = document.getElementById('videoTransition')?.value || 'none';
+    let alpha = 1;
+    if(tr === 'fade'){
       const dIn = Math.min(1.5, Math.max(0.3, dur*0.1));
-      const dOut= Math.min(1.5, Math.max(0.3, dur*0.12));
-      const localT = Math.min(Math.max(t-start,0), dur);
-      if(localT<dIn) alpha = localT/dIn;
-      else if(localT>dur-dOut) alpha = Math.max(0, (dur-localT)/dOut);
-    } else if(tr==='flash'){
-      alpha = 1 - Math.max(0, 0.1*Math.sin((t-start)*10));
+      const dOut = Math.min(1.5, Math.max(0.3, dur*0.12));
+      const localT = Math.min(Math.max(t - start, 0), dur);
+      if(localT < dIn) alpha = localT / dIn;
+      else if(localT > dur - dOut) alpha = Math.max(0, (dur - localT) / dOut);
+    } else if(tr === 'flash'){
+      alpha = 1 - Math.max(0, 0.1 * Math.sin((t - start) * 10));
     }
 
     ctx.save();
     ctx.globalAlpha = alpha;
-
-    // Base filter
-    ctx.filter = els.filter.value==='none' ? 'none' : els.filter.value;
-
-    // Draw video
+    ctx.filter = els.filter.value === 'none' ? 'none' : els.filter.value;
     ctx.drawImage(video, 0, 0, w, h);
     ctx.restore();
 
-    // Extra tint/glow overlay
-    const extra = parseFloat(els.filterExtra.value)||0;
-    if(extra>0){
+    const extra = parseFloat(els.filterExtra.value) || 0;
+    if(extra > 0){
       ctx.save();
-      ctx.globalAlpha = extra*0.25;
+      ctx.globalAlpha = extra * 0.25;
       ctx.fillStyle = els.glowColor.value || '#4ca7ff';
-      ctx.fillRect(0,0,w,h);
+      ctx.fillRect(0, 0, w, h);
       ctx.restore();
     }
 
-    // Image overlay with animation
     if(overlayImg){
       ctx.save();
-      const baseX=parseFloat(els.imgX.value)||40;
-      const baseY=parseFloat(els.imgY.value)||40;
-      let x=baseX, y=baseY, scale=1, rot=0;
-
-      const anim=els.imageAnim.value;
-      if(anim==='slide'){ x = baseX + Math.sin(t*0.8)*40; }
-      else if(anim==='float'){ y = baseY + Math.sin(t*1.2)*30; }
-      else if(anim==='spin'){ rot = Math.sin(t*0.6)*0.15; }
-      else if(anim==='zoom'){ scale = 1 + Math.sin(t*0.5)*0.08; }
-
-      const ow = Math.min(w/3, overlayImg.width);
-      const oh = ow * (overlayImg.height/overlayImg.width);
-      ctx.translate(x+ow/2, y+oh/2);
+      const baseX = parseFloat(els.imgX.value) || 40;
+      const baseY = parseFloat(els.imgY.value) || 40;
+      let x = baseX, y = baseY, scale = 1, rot = 0;
+      const anim = els.imageAnim.value;
+      if(anim === 'slide'){ x = baseX + Math.sin(t * 0.8) * 40; }
+      else if(anim === 'float'){ y = baseY + Math.sin(t * 1.2) * 30; }
+      else if(anim === 'spin'){ rot = Math.sin(t * 0.6) * 0.15; }
+      else if(anim === 'zoom'){ scale = 1 + Math.sin(t * 0.5) * 0.08; }
+      const ow = Math.min(w / 3, overlayImg.width);
+      const oh = ow * (overlayImg.height / overlayImg.width);
+      ctx.translate(x + ow/2, y + oh/2);
       ctx.rotate(rot);
       ctx.scale(scale, scale);
       ctx.globalAlpha = 0.92;
@@ -371,47 +386,52 @@
       ctx.restore();
     }
 
-    // Text overlay
     const txt = els.overlayText.value.trim();
     if(txt){
       ctx.save();
       ctx.globalAlpha = 0.95;
-      ctx.font = Math.round(h*0.045)+'px "Segoe UI", Arial';
+      ctx.font = Math.round(h * 0.045) + 'px "Segoe UI", Arial';
       ctx.fillStyle = '#ffffff';
       ctx.shadowColor = els.glowColor.value || '#4ca7ff';
       ctx.shadowBlur = 18;
       ctx.textAlign = 'center';
-      ctx.fillText(txt, w/2, h-28);
+      ctx.fillText(txt, w/2, h - 28);
       ctx.restore();
     }
   }
 
-  // Export
+  // التصدير
   els.exportBtn.addEventListener('click', async ()=>{
     if(exporting) return;
     if(!els.video.src){ alert('حمّل فيديو أولاً'); return; }
-    setStatus('بدء التصدير…'); exporting=true; recordedBlobs=[]; els.log.innerHTML='';
+    setStatus('بدء التصدير…'); exporting = true; recordedBlobs = []; els.log.innerHTML = '';
+
+    // ضبط جودة ودقة
+    setCanvasSizeForQuality(els.quality.value);
+    const fps = parseInt(els.fps.value || '24', 10);
+    const bitsPerSecond = parseInt(els.bits.value || '2500000', 10);
 
     const ctx = els.canvas.getContext('2d');
-    const stream = els.canvas.captureStream(30);
+    const stream = els.canvas.captureStream(fps);
 
-    // Audio setup
-    const addOriginal = (els.muteOriginal.value==='no');
+    // صوت الفيديو الأصلي
+    const addOriginal = (els.muteOriginal.value === 'no');
     if(addOriginal){
       try{
         const vStream = els.video.captureStream();
         const vTracks = vStream.getAudioTracks();
         if(vTracks.length) stream.addTrack(vTracks[0]);
-      }catch{}
+      }catch(e){}
       els.video.muted = false;
     } else {
       els.video.muted = true;
     }
 
+    // صوت خارجي عبر WebAudio
     if(audio){
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       gainNode = audioCtx.createGain();
-      gainNode.gain.value = parseFloat(els.audioGain.value)||1;
+      gainNode.gain.value = parseFloat(els.audioGain.value) || 1;
       audioSource = audioCtx.createMediaElementSource(audio);
       const dest = audioCtx.createMediaStreamDestination();
       audioSource.connect(gainNode).connect(dest);
@@ -420,42 +440,62 @@
       if(aTracks.length) stream.addTrack(aTracks[0]);
     }
 
-    // Recorder
-    const opts = { mimeType: 'video/webm;codecs=vp9' };
-    const finalOpts = MediaRecorder.isTypeSupported(opts.mimeType) ? opts : { mimeType:'video/webm;codecs=vp8' };
-    recorder = new MediaRecorder(stream, finalOpts);
-    recorder.ondataavailable = e=>{ if(e.data?.size) recordedBlobs.push(e.data); };
-    recorder.onstop = ()=>{
-      const blob = new Blob(recordedBlobs, {type: finalOpts.mimeType});
-      const url = URL.createObjectURL(blob);
-      els.downloadBtn.href = url;
-      els.downloadBtn.style.display='inline-flex';
-      setStatus('جاهز للتنزيل');
-      log('الحجم: ' + Math.round(blob.size/1024) + ' KB');
-      // Optional: small toast
-      showToast('تم تجهيز الفيديو للتنزيل');
+    // إعداد MediaRecorder مع bitsPerSecond
+    const opts = { mimeType: 'video/webm;codecs=vp9', bitsPerSecond: bitsPerSecond };
+    const finalOpts = MediaRecorder.isTypeSupported(opts.mimeType) ? opts : { mimeType: 'video/webm;codecs=vp8' };
+    try{
+      recorder = new MediaRecorder(stream, finalOpts);
+    }catch(err){
+      recorder = new MediaRecorder(stream);
+    }
+
+    let totalBytes = 0;
+    recorder.ondataavailable = e=>{
+      if(e.data && e.data.size){
+        recordedBlobs.push(e.data);
+        totalBytes += e.data.size;
+        setStatus('تسجيل... حجم مؤقت: ' + Math.round(totalBytes/1024) + ' KB');
+      }
     };
+
+    recorder.onstop = ()=>{
+      const blob = new Blob(recordedBlobs, { type: finalOpts.mimeType || 'video/webm' });
+      // revoke القديم لو موجود
+      if(lastOutputUrl) URL.revokeObjectURL(lastOutputUrl);
+      const url = URL.createObjectURL(blob);
+      lastOutputUrl = url;
+      els.downloadBtn.href = url;
+      els.downloadBtn.style.display = 'inline-flex';
+      setStatus('جاهز للتنزيل');
+      log('الحجم النهائي: ' + Math.round(blob.size/1024) + ' KB');
+      showToast('تم تجهيز الفيديو للتنزيل');
+      // revoke بعد التنزيل تلقائياً
+      els.downloadBtn.addEventListener('click', ()=>{
+        setTimeout(()=> { try{ URL.revokeObjectURL(url); }catch{} }, 3000);
+      }, { once: true });
+    };
+
     recorder.start(120);
 
-    // Playback
-    const rate = parseFloat(els.rate.value)||1;
+    // تشغيل ومزامنة
+    const rate = parseFloat(els.rate.value) || 1;
     els.video.playbackRate = rate;
     if(audio){ audio.playbackRate = rate; audio.currentTime = 0; }
 
-    const start = Math.max(0, parseFloat(els.startSec.value)||0);
-    const end = parseFloat(els.endSec.value);
-    const hasEnd = !isNaN(end) && end>start;
+    const start = Math.max(0, parseFloat(document.getElementById('startSec')?.value || 0) || 0);
+    const end = parseFloat(document.getElementById('endSec')?.value || NaN);
+    const hasEnd = !isNaN(end) && end > start;
 
     els.video.currentTime = start;
-    await els.video.play(); if(audio) await audio.play();
+    await els.video.play();
+    if(audio) await audio.play();
 
-    const w=els.canvas.width, h=els.canvas.height;
-    let stopReq=false;
+    let stopReq = false;
     function loop(){
       if(stopReq) return;
       drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime);
-      const t=els.video.currentTime;
-      if(hasEnd && t>=end){ stopReq=true; finish(); return; }
+      const t = els.video.currentTime;
+      if(hasEnd && t >= end){ stopReq = true; finish(); return; }
       requestAnimationFrame(loop);
     }
     loop();
@@ -463,18 +503,18 @@
     async function finish(){
       try{
         els.video.pause(); if(audio) audio.pause();
-        recorder.stop(); exporting=false; setStatus('اكتمل التصدير');
+        recorder.stop(); exporting = false; setStatus('اكتمل التصدير');
       }catch(err){
-        log('خطأ: '+err.message); exporting=false; setStatus('فشل التصدير');
+        log('خطأ أثناء الإيقاف: ' + err.message); exporting = false; setStatus('فشل التصدير');
       }
     }
   });
 
-  // Live filter preview
+  // معاينة فلتر مباشر
   els.filter.addEventListener('change', ()=>{ els.canvas.style.filter = els.filter.value; });
   els.audioGain.addEventListener('input', ()=>{ if(gainNode) gainNode.gain.value = parseFloat(els.audioGain.value)||1; });
 
-  // Simple toast
+  // Toast بسيط
   function showToast(text){
     const t = document.createElement('div');
     t.textContent = text;
@@ -488,38 +528,29 @@
     setTimeout(()=> { t.style.opacity='0'; setTimeout(()=> t.remove(),300); }, 3000);
   }
 
-  // PWA manifest & SW inline (icon + caching)
-  if('serviceWorker' in navigator){
-    // أيقونة مدمجة (Base64 PNG 192x192) — استبدلها لاحقًا لو حبيت
-    const iconPng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADMAQAAAABrRr0NAAAAC0lEQVR4nO3BMQEAAAgDINc/9EoYHcQhCk0AAAAASUVORK5CYII=';
-    const manifest = {
-      name: "Glass Video Editor",
-      short_name: "GlassEdit",
-      start_url: "./",
-      display: "standalone",
-      background_color: "#0a0f1f",
-      theme_color: "#4ca7ff",
-      icons: [{ src: iconPng, sizes: "192x192", type: "image/png" }]
-    };
-    const manBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
-    const manUrl = URL.createObjectURL(manBlob);
-    const link = document.createElement('link'); link.rel='manifest'; link.href=manUrl; document.head.appendChild(link);
+  // Install prompt handling
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    els.installBtn.style.display = 'inline-block';
+  });
 
-    const swCode = `
-      const CACHE='glass-edit-v1';
-      const CORE=['./'];
-      self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))); self.skipWaiting(); });
-      self.addEventListener('activate',e=> self.clients.claim());
-      self.addEventListener('fetch',e=>{
-        e.respondWith(caches.match(e.request).then(r=> r || fetch(e.request).then(res=>{
-          const copy=res.clone(); caches.open(CACHE).then(c=>c.put(e.request,copy)); return res;
-        }).catch(()=> r)));
-      });
-    `;
-    const swBlob = new Blob([swCode], {type:'text/javascript'});
-    const swUrl = URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swUrl).catch(()=>{});
+  els.installBtn.addEventListener('click', async () => {
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    els.installBtn.style.display = 'none';
+    if(choice && choice.outcome === 'accepted') showToast('تم تثبيت التطبيق');
+  });
+
+  // تسجيل Service Worker من الجذر (sw.js يجب أن يكون في root)
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('/sw.js').then(()=> {
+      console.log('Service Worker registered from /sw.js');
+    }).catch(()=>{ console.log('SW registration failed'); });
   }
+
 })();
 </script>
 </body>
