@@ -3,51 +3,76 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>Yotyosr — شبيه يوتيوب | PWA متقدم</title>
+<title>Yotyosr — واجهة شبيهة بيوتيوب | PWA متقدم</title>
 <meta name="theme-color" content="#0ea5e9" />
 
 <style>
   :root{
-    --bg:#0f0f0f; --header:#0f0f0f; --sidebar:#0f0f0f; --text:#fff; --muted:#aaaaaa; --border:#303030;
+    --bg:#0f0f0f; --surface:#121212; --header:#0f0f0f; --sidebar:#0f0f0f;
+    --text:#ffffff; --muted:#b3b3b3; --border:#303030;
     --accent:#0ea5e9; --accent2:#22d3ee;
+    --header-h:56px; --sidebar-w:240px;
   }
   *{box-sizing:border-box}
-  html,body{margin:0; background:var(--bg); color:var(--text); font-family:Roboto,"Segoe UI",Tahoma,sans-serif}
-  a{color:inherit; text-decoration:none}
+  html,body{height:100%; margin:0; background:var(--bg); color:var(--text); font-family:Roboto,"Segoe UI",Tahoma,sans-serif}
 
-  /* App layout */
-  .app{display:grid; grid-template-columns: 240px 1fr; grid-template-rows: 56px 1fr; grid-template-areas:
-      "header header" "sidebar main"; height:100vh}
-
-  /* Header */
-  .header{grid-area:header; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:var(--header); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10}
+  /* ثابت أعلى */
+  .header{
+    position:fixed; top:0; left:0; right:0; height:var(--header-h);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 16px; background:var(--header); border-bottom:1px solid var(--border); z-index:1000;
+  }
   .header-left{display:flex; align-items:center; gap:12px}
   .logo{display:flex; align-items:center; gap:8px; font-weight:700}
-  .logo .play{width:26px; height:18px; background:#fff; clip-path: polygon(0 0, 100% 50%, 0 100%)}
+  .logo .play{width:26px; height:18px; background:#fff; clip-path:polygon(0 0,100% 50%,0 100%)}
   .logo .name{letter-spacing:.2px}
   .search{display:flex; align-items:center; gap:0; flex:1; max-width:700px; margin:0 16px}
   .search input{
-    flex:1; height:40px; background:#121212; border:1px solid var(--border); color:#fff; padding:0 12px; border-radius:20px 0 0 20px; outline:none;
+    flex:1; height:40px; background:var(--surface); border:1px solid var(--border); color:#fff; padding:0 12px;
+    border-radius:20px 0 0 20px; outline:none;
   }
   .search button{
-    height:40px; width:64px; border:1px solid var(--border); border-left:none; border-radius:0 20px 20px 0; background:#222; color:#fff; cursor:pointer;
+    height:40px; width:64px; border:1px solid var(--border); border-left:none;
+    border-radius:0 20px 20px 0; background:#222; color:#fff; cursor:pointer;
   }
   .header-right{display:flex; align-items:center; gap:10px}
-  .install-btn{padding:8px 12px; border-radius:999px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; cursor:pointer}
+  .install-btn{
+    padding:8px 12px; border-radius:999px; background:linear-gradient(135deg,var(--accent),var(--accent2));
+    border:none; color:#fff; cursor:pointer
+  }
   .icon-btn{width:40px; height:40px; display:grid; place-items:center; border-radius:999px; background:#222; border:1px solid var(--border); cursor:pointer}
 
-  /* Sidebar */
-  .sidebar{grid-area:sidebar; background:var(--sidebar); border-right:1px solid var(--border); padding:8px 0; overflow:auto}
-  .nav-item{display:flex; align-items:center; gap:12px; padding:10px 16px; border-radius:10px; cursor:pointer; color:#e6e6e6}
-  .nav-item:hover{background:#1f1f1f}
+  /* سايدبار ثابت */
+  .sidebar{
+    position:fixed; top:var(--header-h); bottom:0; left:0; width:var(--sidebar-w);
+    background:var(--sidebar); border-right:1px solid var(--border); padding:8px 0;
+    overflow:auto; z-index:900;
+  }
   .section-title{padding:8px 16px; color:#bbb; font-size:.9rem; margin-top:6px}
+  .nav-item{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 16px; border-radius:10px; cursor:pointer; color:#e6e6e6;
+  }
+  .nav-item:hover{background:#1f1f1f}
 
-  /* Main */
-  .main{grid-area:main; overflow:auto}
-  .chips{display:flex; gap:8px; padding:12px 16px; border-bottom:1px solid var(--border); position:sticky; top:56px; background:var(--bg); z-index:5}
+  /* منطقة المحتوى — تبدأ بعد الهيدر والسايدبار */
+  .main{
+    position:relative;
+    margin-left:var(--sidebar-w);
+    padding-top:var(--header-h);
+    min-height:100vh;
+  }
+
+  /* شريط التصنيفات مثبت تحت الهيدر داخل المحتوى */
+  .chips{
+    position:sticky; top:calc(var(--header-h));
+    display:flex; gap:8px; padding:12px 16px; background:var(--bg); border-bottom:1px solid var(--border); z-index:800;
+  }
   .chip{padding:8px 12px; background:#272727; border:1px solid var(--border); border-radius:999px; color:#ddd; cursor:pointer; white-space:nowrap}
   .chip.active{background:#fff; color:#000; border-color:#fff}
-  .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px; padding:16px}
+
+  /* شبكة الصفحة الرئيسية */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; padding:16px}
   .card{display:flex; flex-direction:column; gap:8px; cursor:pointer}
   .thumb{width:100%; aspect-ratio:16/9; background:#111; border-radius:12px; overflow:hidden; object-fit:cover}
   .row{display:flex; gap:10px}
@@ -56,12 +81,12 @@
   .title{font-weight:500; line-height:1.3}
   .sub{color:#aaa; font-size:.9rem}
 
-  /* Watch page */
-  .watch{display:grid; grid-template-columns: 1fr 420px; gap:16px; padding:16px}
+  /* صفحة المشاهدة */
+  .watch{display:grid; grid-template-columns:1fr 420px; gap:16px; padding:16px}
   .player-wrap{background:#000; border-radius:12px; overflow:hidden}
   .player-wrap video{width:100%; height:auto; display:block; background:#000}
   .watch-title{font-size:1.2rem; font-weight:600; margin-top:8px}
-  .watch-actions{display:flex; gap:8px; margin:8px 0}
+  .watch-actions{display:flex; gap:8px; margin:8px 0; flex-wrap:wrap}
   .btn{padding:8px 12px; border-radius:999px; background:#272727; border:1px solid var(--border); color:#fff; cursor:pointer}
   .btn.secondary{background:#1f1f1f}
   .watch-meta{color:#aaa; font-size:.9rem}
@@ -72,100 +97,108 @@
   .divider{height:1px; background:var(--border); margin:12px 0}
 
   /* Toast + offline */
-  .toast{position:fixed; right:20px; bottom:20px; background:rgba(16,185,129,.15); color:#d1fae5; border:1px solid rgba(16,185,129,.45);
+  .toast{
+    position:fixed; right:20px; bottom:20px; background:rgba(16,185,129,.15); color:#d1fae5; border:1px solid rgba(16,185,129,.45);
     padding:10px 14px; border-radius:12px; backdrop-filter: blur(10px);
-    transform: translateY(20px); opacity:0; pointer-events:none; transition:.35s ease;}
+    transform: translateY(20px); opacity:0; pointer-events:none; transition:.35s ease; z-index:1100;
+  }
   .toast.show{transform:translateY(0); opacity:1; pointer-events:auto}
-  .offline{position:fixed; left:20px; bottom:20px; background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.4); padding:8px 12px; border-radius:10px}
-</style>
+  .offline{
+    position:fixed; left:20px; bottom:20px; background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.4);
+    padding:8px 12px; border-radius:10px; z-index:1100
+  }
 
-<link id="appIconLink" rel="icon" type="image/png" />
-<link id="manifestLink" rel="manifest" />
+  /* استجابة للموبايل */
+  @media (max-width: 900px){
+    :root{ --sidebar-w:0px; }
+    .sidebar{display:none}
+    .main{margin-left:0}
+    .watch{grid-template-columns:1fr}
+  }
+</style>
 </head>
 <body>
-<div class="app">
-  <!-- Header -->
-  <div class="header">
-    <div class="header-left">
-      <div class="logo">
-        <div class="play"></div>
-        <div class="name">Yotyosr</div>
+
+<!-- الهيدر -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">
+      <div class="play"></div>
+      <div class="name">Yotyosr</div>
+    </div>
+  </div>
+  <div class="search">
+    <input id="searchInp" type="text" placeholder="ابحث" />
+    <button id="searchBtn">بحث</button>
+  </div>
+  <div class="header-right">
+    <button id="installBtn" class="install-btn" disabled>تثبيت</button>
+    <div class="icon-btn" title="إشعارات">🔔</div>
+    <div class="icon-btn" title="حساب">👤</div>
+  </div>
+</div>
+
+<!-- السايدبار -->
+<div class="sidebar" id="sidebar">
+  <div class="section-title">الأقسام</div>
+  <div class="nav-item" data-chip="الكل">الرئيسية</div>
+  <div class="nav-item" data-chip="موسيقى">موسيقى</div>
+  <div class="nav-item" data-chip="ألعاب">ألعاب</div>
+  <div class="nav-item" data-chip="تعليمي">تعليمي</div>
+  <div class="nav-item" data-chip="رياضة">رياضة</div>
+  <div class="section-title">أدوات</div>
+  <div class="nav-item" id="pipNav">صورة داخل صورة</div>
+  <div class="nav-item" id="homeNav">الصفحة الرئيسية</div>
+</div>
+
+<!-- المحتوى الرئيسي -->
+<div class="main">
+  <div class="chips" id="chips">
+    <div class="chip active" data-chip="الكل">الكل</div>
+    <div class="chip" data-chip="موسيقى">موسيقى</div>
+    <div class="chip" data-chip="ألعاب">ألعاب</div>
+    <div class="chip" data-chip="تعليمي">تعليمي</div>
+    <div class="chip" data-chip="رياضة">رياضة</div>
+  </div>
+
+  <div id="homeView">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div id="watchView" style="display:none">
+    <div class="watch">
+      <div>
+        <div class="player-wrap"><video id="player" controls playsinline></video></div>
+        <div class="watch-title" id="watchTitle">—</div>
+        <div class="watch-actions">
+          <button class="btn" id="likeBtn">👍 أعجبني</button>
+          <button class="btn" id="shareBtn">🔗 مشاركة</button>
+          <button class="btn" id="speedBtn">⚡ السرعة</button>
+          <button class="btn" id="pipBtn">🖼️ صورة داخل صورة</button>
+          <button class="btn secondary" id="backBtn">⬅️ رجوع</button>
+        </div>
+        <div class="watch-meta" id="watchMeta">—</div>
+        <div class="divider"></div>
+        <div class="watch-meta">التعليقات غير مفعلة في هذا النموذج.</div>
       </div>
-    </div>
-
-    <div class="search">
-      <input id="searchInp" type="text" placeholder="ابحث" />
-      <button id="searchBtn">بحث</button>
-    </div>
-
-    <div class="header-right">
-      <button id="installBtn" class="install-btn" disabled>تثبيت</button>
-      <div class="icon-btn" title="إشعارات">🔔</div>
-      <div class="icon-btn" title="حساب">👤</div>
-    </div>
-  </div>
-
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <div class="section-title">الأقسام</div>
-    <div class="nav-item" data-chip="الكل">الرئيسية</div>
-    <div class="nav-item" data-chip="موسيقى">موسيقى</div>
-    <div class="nav-item" data-chip="ألعاب">ألعاب</div>
-    <div class="nav-item" data-chip="تعليمي">تعليمي</div>
-    <div class="nav-item" data-chip="رياضة">رياضة</div>
-    <div class="section-title">أدوات</div>
-    <div class="nav-item" id="pipNav">صورة داخل صورة</div>
-    <div class="nav-item" id="homeNav">الصفحة الرئيسية</div>
-  </div>
-
-  <!-- Main -->
-  <div class="main">
-    <div class="chips" id="chips">
-      <div class="chip active" data-chip="الكل">الكل</div>
-      <div class="chip" data-chip="موسيقى">موسيقى</div>
-      <div class="chip" data-chip="ألعاب">ألعاب</div>
-      <div class="chip" data-chip="تعليمي">تعليمي</div>
-      <div class="chip" data-chip="رياضة">رياضة</div>
-    </div>
-
-    <div id="homeView">
-      <div class="grid" id="grid"></div>
-    </div>
-
-    <div id="watchView" style="display:none">
-      <div class="watch">
-        <div>
-          <div class="player-wrap"><video id="player" controls playsinline></video></div>
-          <div class="watch-title" id="watchTitle">—</div>
-          <div class="watch-actions">
-            <button class="btn" id="likeBtn">👍 أعجبني</button>
-            <button class="btn" id="shareBtn">🔗 مشاركة</button>
-            <button class="btn" id="speedBtn">⚡ السرعة</button>
-            <button class="btn" id="pipBtn">🖼️ صورة داخل صورة</button>
-            <button class="btn secondary" id="backBtn">⬅️ رجوع</button>
-          </div>
-          <div class="watch-meta" id="watchMeta">—</div>
-          <div class="divider"></div>
-          <div class="watch-meta">التعليقات غير مفعلة في هذا النموذج.</div>
-        </div>
-        <div>
-          <div class="suggestions" id="suggestions"></div>
-        </div>
+      <div>
+        <div class="suggestions" id="suggestions"></div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- إشعارات -->
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="offline" class="offline" hidden>أنت أوفلاين — التطبيق يعمل دون اتصال.</div>
 
-<!-- عناصر أيقونة/مانيفست -->
+<!-- عناصر الأيقونة والمانيفست -->
 <canvas id="appIconCanvas" width="128" height="128" style="position:fixed;left:-9999px;top:-9999px"></canvas>
 <link id="appIconLink" rel="icon" type="image/png" />
 <link id="manifestLink" rel="manifest" />
 
 <script>
-/* ========= أدوات واجهة ========= */
+/* ========= أدوات ========= */
 const $ = sel => document.querySelector(sel);
 const $$ = sel => document.querySelectorAll(sel);
 const showToast = (msg, ok=true) => {
@@ -265,7 +298,7 @@ function updateOnline(){ $('#offline').hidden = navigator.onLine; }
 window.addEventListener('online', updateOnline);
 window.addEventListener('offline', updateOnline);
 
-/* ========= تحميل الفيديوهات من ملف خارجي ========= */
+/* ========= بيانات الفيديوهات ========= */
 let library = []; // {id,title,channel,views:number,age,url,thumb,category}
 const LS_LAST = 'yotyosr.last';
 function setLastIndex(i){ localStorage.setItem(LS_LAST, String(i)); }
@@ -281,7 +314,7 @@ async function fetchLibrary(){
   }
 }
 
-/* ========= أدوات عرض ========= */
+/* ========= توليد صورة مصغّرة بديلة نصية عند فقدان thumb ========= */
 function makeThumbText(w=1280,h=720,text='Yotyosr'){
   const cn = document.createElement('canvas'); cn.width=w; cn.height=h;
   const ctx = cn.getContext('2d');
@@ -297,6 +330,7 @@ function makeThumbText(w=1280,h=720,text='Yotyosr'){
 function renderHome(){
   $('#homeView').style.display='block';
   $('#watchView').style.display='none';
+
   const q = ($('#searchInp').value||'').trim().toLowerCase();
   const activeChip = [...$$('.chip')].find(c=> c.classList.contains('active'))?.dataset.chip || 'الكل';
   const grid = $('#grid'); grid.innerHTML='';
@@ -334,22 +368,19 @@ function openWatchByIndex(i){
 
   // اقتراحات
   const sugg = $('#suggestions'); sugg.innerHTML='';
-  library
-    .filter(s=> s.id!==it.id)
-    .slice(0,10)
-    .forEach(s=>{
-      const sc = document.createElement('div'); sc.className='sugg-card';
-      const th = document.createElement('img'); th.className='sugg-thumb'; th.src = s.thumb || makeThumbText(640,360,s.title); th.alt = s.title;
-      const m = document.createElement('div'); m.className='sugg-meta';
-      const tt = document.createElement('div'); tt.textContent = s.title; tt.style.fontWeight='500';
-      const sb = document.createElement('div'); sb.textContent = `${s.channel} • ${s.views} مشاهدة`; sb.style.color='#aaa';
-      m.appendChild(tt); m.appendChild(sb);
-      sc.appendChild(th); sc.appendChild(m);
-      sc.addEventListener('click', ()=> openWatchByIndex(library.indexOf(s)));
-      sugg.appendChild(sc);
-    });
+  library.filter((s,idx)=> idx!==i).slice(0,10).forEach((s)=>{
+    const sc = document.createElement('div'); sc.className='sugg-card';
+    const th = document.createElement('img'); th.className='sugg-thumb'; th.src = s.thumb || makeThumbText(640,360,s.title); th.alt = s.title;
+    const m = document.createElement('div'); m.className='sugg-meta';
+    const tt = document.createElement('div'); tt.textContent = s.title; tt.style.fontWeight='500';
+    const sb = document.createElement('div'); sb.textContent = `${s.channel} • ${s.views} مشاهدة`; sb.style.color='#aaa';
+    m.appendChild(tt); m.appendChild(sb);
+    sc.appendChild(th); sc.appendChild(m);
+    sc.addEventListener('click', ()=> openWatchByIndex(library.indexOf(s)));
+    sugg.appendChild(sc);
+  });
 
-  // عدّاد مشاهدات
+  // عدّاد مشاهدات محلي
   it.views = (Number(it.views)||0) + 1;
 }
 
@@ -365,7 +396,7 @@ $('#chips').addEventListener('click', (e)=>{
 $('#homeNav').addEventListener('click', renderHome);
 $('#backBtn').addEventListener('click', renderHome);
 
-/* ========= PiP + سرعات + مشاركة ========= */
+/* ========= PiP + السرعة + مشاركة ========= */
 $('#pipBtn').addEventListener('click', async ()=>{
   if(document.pictureInPictureEnabled && !player.disablePictureInPicture){ try{ await player.requestPictureInPicture(); }catch{} }
   else showToast('PiP غير مدعوم', false);
@@ -377,9 +408,9 @@ $('#pipNav').addEventListener('click', async ()=>{
 $('#speedBtn').addEventListener('click', ()=>{
   const rates = [0.5, 0.75, 1, 1.25, 1.5, 2];
   const cur = player.playbackRate;
-  const next = rates[(rates.indexOf(cur)+1) % rates.length] ?? 1;
-  player.playbackRate = next;
-  showToast('السرعة: ' + next + '×');
+  const idx = (rates.indexOf(cur)+1) % rates.length;
+  player.playbackRate = rates[idx];
+  showToast('السرعة: ' + rates[idx] + '×');
 });
 $('#shareBtn').addEventListener('click', async ()=>{
   const i = getLastIndex(); const it = library[i];
@@ -401,9 +432,9 @@ document.addEventListener('keydown', (e)=>{
 /* ========= تثبيت PWA ========= */
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault(); deferredPrompt=e; $('#installBtn').disabled=true;
-  // نفعّل بعد ثانية لنعطي إحساس جاهزية
-  setTimeout(()=> { $('#installBtn').disabled=false; showToast('جاهز للتثبيت — اضغط زر تثبيت'); }, 500);
+  e.preventDefault(); deferredPrompt=e;
+  // نفعّل زر التثبيت بعد لحظة
+  setTimeout(()=> { $('#installBtn').disabled=false; }, 200);
 });
 $('#installBtn').addEventListener('click', async ()=>{
   if(!deferredPrompt) return; deferredPrompt.prompt();
