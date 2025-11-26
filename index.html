@@ -2,101 +2,136 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>فحص الجهاز والمتصفح — PWA واحد-ملف</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Yotyosr — مشغّل فيديو زجاجي | PWA واحد-ملف</title>
 <meta name="theme-color" content="#0ea5e9" />
 
 <style>
   :root{
-    --bg:#0b1220; --glass:rgba(255,255,255,.08); --text:#e6f2ff; --muted:#a9c2d9;
-    --accent:#0ea5e9; --accent-2:#22d3ee; --shadow:0 20px 40px rgba(0,0,0,.35); --radius:18px;
+    --bg:#0b1220; --glass:rgba(255,255,255,.08); --glass2:rgba(255,255,255,.12);
+    --text:#e6f2ff; --muted:#a9c2d9; --accent:#0ea5e9; --accent2:#22d3ee;
+    --shadow:0 20px 40px rgba(0,0,0,.35); --radius:18px;
   }
-  *{box-sizing:border-box} html,body{margin:0; min-height:100%; color:var(--text);
-    background: radial-gradient(1000px 700px at 10% 10%, #0f1b33 0%, #0b1220 45%, #070c16 100%);
-    font-family: "Segoe UI", Tahoma, sans-serif;
-  }
-  .container{max-width:1100px; margin:0 auto; padding:24px;}
-  header{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:18px;}
-  .brand{display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:12px; background:var(--glass);
-    backdrop-filter: blur(12px); box-shadow: var(--shadow);}
-  .brand canvas{width:40px; height:40px; border-radius:10px;}
-  .brand .name{font-weight:700} .brand .sub{color:var(--muted); font-size:.9rem}
+  *{box-sizing:border-box}
+  html,body{margin:0; min-height:100%; background:radial-gradient(1000px 700px at 10% 10%, #0f1b33 0%, #0b1220 45%, #070c16 100%); color:var(--text); font-family:"Segoe UI",Tahoma,sans-serif}
+  .container{max-width:1200px; margin:0 auto; padding:20px}
+  header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px}
+  .brand{display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:12px; background:var(--glass); backdrop-filter:blur(12px); box-shadow:var(--shadow)}
+  .brand canvas{width:42px; height:42px; border-radius:10px}
+  .brand .titles{display:flex; flex-direction:column}
+  .brand .name{font-weight:700; letter-spacing:.3px}
+  .brand .sub{color:var(--muted); font-size:.9rem}
   .actions{display:flex; gap:10px; flex-wrap:wrap}
-  button{appearance:none; border:none; color:#fff; font-weight:600; padding:10px 14px; border-radius:12px; cursor:pointer;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow);}
-  button.secondary{background: linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.08)); color:var(--text);}
+  button{
+    appearance:none; border:none; border-radius:12px; padding:10px 14px; color:#fff; font-weight:600; cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),var(--accent2)); box-shadow:var(--shadow)
+  }
+  button.secondary{
+    background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.08)); color:var(--text)
+  }
   button:disabled{opacity:.6; cursor:not-allowed}
-  .card{margin-top:16px; border-radius:var(--radius); background:var(--glass); backdrop-filter: blur(18px);
-    box-shadow: var(--shadow); overflow:hidden;}
-  .toolbar{display:flex; gap:12px; flex-wrap:wrap; padding:12px; border-bottom:1px solid rgba(255,255,255,.06);
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));}
+  .layout{display:grid; grid-template-columns: 320px 1fr; gap:16px}
+  .panel{border-radius:var(--radius); background:var(--glass); backdrop-filter:blur(18px); box-shadow:var(--shadow); overflow:hidden}
+  .panel .hd{padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.25); font-weight:600}
+  .panel .bd{padding:12px}
+  .search{display:flex; gap:8px; margin-bottom:12px}
+  .input, input[type="text"]{
+    flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.15); color:var(--text);
+    background:rgba(255,255,255,.06)
+  }
+  .list{display:grid; grid-template-columns:1fr; gap:10px}
+  .card{display:flex; gap:10px; border-radius:12px; background:rgba(255,255,255,.06); overflow:hidden; box-shadow:var(--shadow)}
+  .thumb{width:120px; height:72px; background:#111; flex-shrink:0}
+  .meta{display:flex; flex-direction:column; justify-content:center}
+  .meta .title{font-weight:600}
+  .meta .sub{color:var(--muted); font-size:.9rem}
+  .player{display:flex; flex-direction:column; gap:12px}
+  .video-wrap{position:relative; border-radius:12px; overflow:hidden; background:#000}
+  video{width:100%; height:auto; display:block; background:#000}
+  .controls{display:flex; gap:8px; flex-wrap:wrap}
   .pill{padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.08); color:var(--muted); font-size:.9rem}
-  .grid{display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; padding:16px;}
-  .panel{padding:12px; border-top:1px solid rgba(255,255,255,.06); display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));}
-  .tile{border-radius:12px; background:rgba(255,255,255,.06); box-shadow: var(--shadow); overflow:hidden;}
-  .tile .hd{padding:10px 12px; font-weight:600; border-bottom:1px solid rgba(255,255,255,.08); background:rgba(0,0,0,.25)}
-  .tile .bd{padding:12px}
-  .kv{display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px dashed rgba(255,255,255,.08)}
-  .kv:last-child{border-bottom:none}
-  .kv .k{color:var(--muted)} .kv .v{font-family:Consolas, monospace}
-  .list{display:flex; flex-direction:column; gap:6px}
-  .tag{display:inline-block; padding:6px 10px; border-radius:10px; background:rgba(255,255,255,.10); font-size:.9rem}
-  .toast{position:fixed; right:20px; bottom:20px; background:rgba(16,185,129,.15); color:#d1fae5; border:1px solid rgba(16,185,129,.45);
-    padding:10px 14px; border-radius:12px; backdrop-filter: blur(10px); box-shadow: var(--shadow); transform: translateY(20px);
-    opacity:0; pointer-events:none; transition:.35s ease;}
-  .toast.show{transform: translateY(0); opacity:1; pointer-events:auto}
-  .offline{position:fixed; left:20px; bottom:20px; background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.4);
-    padding:8px 12px; border-radius:10px; backdrop-filter: blur(10px);}
+  .small{font-size:.85rem}
+  .toast{
+    position:fixed; right:20px; bottom:20px; background:rgba(16,185,129,.15); color:#d1fae5; border:1px solid rgba(16,185,129,.45);
+    padding:10px 14px; border-radius:12px; backdrop-filter: blur(10px); box-shadow: var(--shadow);
+    transform: translateY(20px); opacity:0; pointer-events:none; transition:.35s ease;
+  }
+  .toast.show{transform:translateY(0); opacity:1; pointer-events:auto}
+  .offline{position:fixed; left:20px; bottom:20px; background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.4); padding:8px 12px; border-radius:10px; backdrop-filter: blur(10px)}
+  .drop{border:2px dashed rgba(255,255,255,.18); border-radius:12px; padding:10px; text-align:center; color:var(--muted)}
+  .kbd{background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:6px; padding:2px 6px; font-family:Consolas,monospace}
 </style>
 
 <link id="appIconLink" rel="icon" type="image/png" />
 <link id="manifestLink" rel="manifest" />
-
 </head>
 <body>
 <div class="container">
   <header>
     <div class="brand">
       <canvas id="appIconCanvas" width="128" height="128" aria-hidden="true"></canvas>
-      <div>
-        <div class="name">فحص الجهاز والمتصفح</div>
-        <div class="sub">PWA واحد-ملف | تقرير تشخيصي | يعمل أوفلاين</div>
+      <div class="titles">
+        <div class="name">Yotyosr</div>
+        <div class="sub">مشغّل فيديو زجاجي — قابل للتثبيت ويعمل أوفلاين</div>
       </div>
     </div>
     <div class="actions">
       <button id="installBtn" disabled>تثبيت</button>
-      <button id="scanBtn">فحص الآن</button>
-      <button id="copyMdBtn" class="secondary">نسخ التقرير Markdown</button>
-      <button id="downloadJsonBtn" class="secondary">تنزيل JSON</button>
+      <button id="addUrlBtn">إضافة رابط فيديو</button>
+      <button id="importBtn" class="secondary">استيراد JSON</button>
+      <button id="exportBtn" class="secondary">تصدير JSON</button>
     </div>
   </header>
 
-  <div class="card">
-    <div class="toolbar">
-      <span class="pill">هدف الشبكة:</span>
-      <input id="pingUrl" class="input" type="text" value="https://www.gstatic.com/generate_204" />
-      <span class="pill">محاولات قياس:</span>
-      <input id="triesInp" type="number" min="1" max="10" value="4" />
-    </div>
-
-    <div id="grid" class="grid" aria-live="polite">
-      <!-- تُملأ بالبلاطات بعد الفحص -->
+  <div class="layout">
+    <div class="panel">
+      <div class="hd">المكتبة</div>
+      <div class="bd">
+        <div class="search">
+          <input id="searchInp" class="input" type="text" placeholder="ابحث بالعنوان..." />
+          <button id="clearSearchBtn" class="secondary">مسح</button>
+        </div>
+        <div id="dropZone" class="drop">اسحب ملفات فيديو هنا للتشغيل السريع</div>
+        <div id="list" class="list" aria-live="polite"></div>
+      </div>
     </div>
 
     <div class="panel">
-      <span class="pill">نصيحة: بعد التثبيت ستجد اختصار “فحص الآن” في قائمة التطبيقات.</span>
-      <span class="tag">Manifest + SW داخل نفس الملف</span>
-      <span class="tag">أيقونة Canvas ديناميكية</span>
+      <div class="hd">المشغّل</div>
+      <div class="bd">
+        <div class="player">
+          <div class="video-wrap">
+            <video id="player" playsinline controls></video>
+          </div>
+          <div class="controls">
+            <button id="prevBtn" class="secondary">السابق</button>
+            <button id="nextBtn" class="secondary">التالي</button>
+            <button id="pipBtn" class="secondary">صورة داخل صورة</button>
+            <button id="thumbBtn" class="secondary">توليد صورة مصغّرة</button>
+            <span class="pill">السرعة:</span>
+            <select id="speedSel">
+              <option value="0.5">0.5×</option>
+              <option value="0.75">0.75×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.25">1.25×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+            <span id="nowInfo" class="pill small">لا يوجد فيديو قيد التشغيل</span>
+          </div>
+          <div id="thumbOut" class="small" style="color:var(--muted)"></div>
+          <div class="small" style="color:var(--muted)">نصيحة: اضغط <span class="kbd">K</span> تشغيل/إيقاف، <span class="kbd">J</span> رجوع 10 ث، <span class="kbd">L</span> تقدم 10 ث.</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<div id="offline" class="offline" hidden>أنت أوفلاين — سيحفظ التطبيق الصفحة ويعمل دون اتصال.</div>
+<div id="offline" class="offline" hidden>أنت أوفلاين — التطبيق يعمل دون اتصال.</div>
 
 <script>
-/* ========= أدوات واجهة ========= */
+/* ========= أدوات ========= */
 const $ = sel => document.querySelector(sel);
 const showToast = (msg, ok=true) => {
   const t = $('#toast');
@@ -109,7 +144,7 @@ const showToast = (msg, ok=true) => {
   showToast._timer = setTimeout(()=> t.classList.remove('show'), 3000);
 };
 
-/* ========= أيقونة ديناميكية ========= */
+/* ========= أيقونة ديناميكية لاسم Yotyosr ========= */
 function generateIcon(size=192){
   const c = $('#appIconCanvas'); c.width=size; c.height=size;
   const ctx = c.getContext('2d');
@@ -117,23 +152,33 @@ function generateIcon(size=192){
   g.addColorStop(0,'#0ea5e9'); g.addColorStop(1,'#22d3ee');
   ctx.fillStyle = g; ctx.fillRect(0,0,size,size);
 
-  // موجات رقمية
+  // لمسة موجية
   ctx.strokeStyle = 'rgba(255,255,255,.6)';
   ctx.lineWidth = Math.max(2, size*0.02);
-  for(let i=0;i<5;i++){
+  for(let i=0;i<4;i++){
     ctx.beginPath();
     for(let x=0; x<=size; x+=size/40){
-      const y = size*0.2 + i*size*0.12 + Math.sin(x/size*Math.PI*2 + i)*size*0.06;
+      const y = size*0.25 + i*size*0.15 + Math.sin(x/size*Math.PI*2 + i)*size*0.06;
       if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     }
     ctx.stroke();
   }
-  // رمز “ف”
+  // شعار حرف Y بشكل مثلث تشغيل
   ctx.fillStyle='rgba(255,255,255,.95)';
-  ctx.font = `${Math.floor(size*0.5)}px serif`;
-  ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.shadowColor='rgba(0,0,0,.3)'; ctx.shadowBlur=size*0.06;
-  ctx.fillText('ف', size/2, size/2);
+  // مثلث تشغيل
+  ctx.beginPath();
+  const tri = size*0.45;
+  ctx.moveTo(size*0.38, size*0.32);
+  ctx.lineTo(size*0.38, size*0.68);
+  ctx.lineTo(size*0.72, size*0.50);
+  ctx.closePath(); ctx.fill();
+  // حرف Y صغير أسفل
+  ctx.shadowBlur=0;
+  ctx.font = `bold ${Math.floor(size*0.28)}px "Segoe UI",sans-serif`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Y', size*0.24, size*0.62);
+
   return c.toDataURL('image/png');
 }
 
@@ -142,23 +187,22 @@ function injectManifest(){
   const icon192 = generateIcon(192);
   const icon512 = generateIcon(512);
   $('#appIconLink').href = icon192;
-
   const manifest = {
-    name: "فحص الجهاز والمتصفح — واحد-ملف",
-    short_name: "فحص",
+    name: "Yotyosr — مشغّل فيديو واحد-ملف",
+    short_name: "Yotyosr",
     start_url: ".",
     scope: ".",
     display: "standalone",
     background_color: "#0b1220",
     theme_color: "#0ea5e9",
-    description: "تشخيص تقني شامل: WebGL/GPU، الشبكة، الذاكرة، التخزين، البطارية، ودعم APIّات.",
+    description: "مكتبة فيديو محلية وروابط خارجية مع صورة مصغّرة وبحث وقائمة تشغيل، يعمل أوفلاين.",
     icons: [
       { src: icon192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
       { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
     ],
     shortcuts: [
-      { name: "فحص الآن", url: "./?scan=1", description: "بدء الفحص مباشرة" },
-      { name: "نسخ التقرير", url: "./?md=1", description: "نسخ Markdown" }
+      { name: "إضافة رابط فيديو", url: "./?add=1", description: "فتح نافذة إضافة" },
+      { name: "تشغيل آخر فيديو", url: "./?resume=1", description: "استئناف التشغيل" }
     ]
   };
   const manifestStr = JSON.stringify(manifest);
@@ -167,314 +211,185 @@ function injectManifest(){
   showToast('تم تجهيز الأيقونة والمانيفست ✅');
 }
 
-/* ========= وظائف القياس ========= */
-async function measureLatency(url, tries=4){
-  const times = [];
-  for(let i=0;i<tries;i++){
-    const t0 = performance.now();
-    try{
-      // استخدام طلب بدون كاش
-      await fetch(url, {cache:'no-store', mode:'cors'});
-      const t1 = performance.now();
-      times.push(t1 - t0);
-    }catch(e){
-      times.push(null);
-    }
-  }
-  const valid = times.filter(t=>t!==null);
-  const avg = valid.length ? valid.reduce((a,b)=>a+b,0)/valid.length : null;
-  const min = valid.length ? Math.min(...valid) : null;
-  const max = valid.length ? Math.max(...valid) : null;
-  return { url, tries, times, avg, min, max };
-}
-function estimateDownlink(){
-  const c = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
-  if(!c) return null;
-  return { downlink: c.downlink, rtt: c.rtt, effectiveType: c.effectiveType, saveData: c.saveData || false };
-}
-async function getBattery(){
-  if(!navigator.getBattery) return null;
-  try{
-    const b = await navigator.getBattery();
-    return { charging: b.charging, level: Math.round(b.level*100), chargingTime: b.chargingTime, dischargingTime: b.dischargingTime };
-  }catch{ return null }
-}
-function getMemory(){
-  const m = performance && performance.memory;
-  if(!m) return null;
-  return {
-    jsHeapSizeLimit: m.jsHeapSizeLimit,
-    totalJSHeapSize: m.totalJSHeapSize,
-    usedJSHeapSize: m.usedJSHeapSize
-  };
-}
-async function getStorageEstimate(){
-  if(!navigator.storage || !navigator.storage.estimate) return null;
-  try{
-    const e = await navigator.storage.estimate();
-    return { quota: e.quota || null, usage: e.usage || null };
-  }catch{ return null }
-}
-function getWebGLInfo(){
-  try{
-    const cn = document.createElement('canvas');
-    const gl = cn.getContext('webgl') || cn.getContext('experimental-webgl');
-    if(!gl) return { supported:false };
-    const dbgInfo = gl.getExtension('WEBGL_debug_renderer_info');
-    const vendor = dbgInfo ? gl.getParameter(dbgInfo.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR);
-    const renderer = dbgInfo ? gl.getParameter(dbgInfo.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
-    return {
-      supported:true,
-      vendor, renderer,
-      version: gl.getParameter(gl.VERSION),
-      shading: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
-      maxTexSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
-      maxTextureImageUnits: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
-      maxCubeMapSize: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)
-    };
-  }catch(e){
-    return { supported:false, error: String(e) };
-  }
-}
-function getAPISupport(){
-  const apis = {
-    webgl: !!(document.createElement('canvas').getContext('webgl')),
-    webgpu: !!navigator.gpu,
-    webrtc: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
-    bluetooth: !!navigator.bluetooth,
-    usb: !!navigator.usb,
-    serial: !!navigator.serial,
-    hid: !!navigator.hid,
-    nfc: !!(navigator.nfc || (window.NDEFReader)),
-    wakeLock: !!navigator.wakeLock,
-    share: !!navigator.share,
-    clipboard: !!navigator.clipboard,
-    localFonts: !!(window.queryLocalFonts),
-    fileSystemAccess: !!(window.showOpenFilePicker),
-    codecs_av1: !!(window.VideoDecoder && VideoDecoder.isConfigSupported) // مؤشر بسيط
-  };
-  return apis;
-}
-async function getPermissions(){
-  if(!navigator.permissions) return null;
-  const names = ['geolocation','notifications','camera','microphone','clipboard-read','clipboard-write'];
-  const res = {};
-  for(const n of names){
-    try{
-      const st = await navigator.permissions.query({name:n});
-      res[n] = st.state;
-    }catch{
-      res[n] = 'unknown';
-    }
-  }
-  return res;
-}
-
-/* ========= عرض النتائج ========= */
-function kv(key, val){
-  const wrap = document.createElement('div'); wrap.className='kv';
-  const k = document.createElement('div'); k.className='k'; k.textContent = key;
-  const v = document.createElement('div'); v.className='v'; v.textContent = val;
-  wrap.appendChild(k); wrap.appendChild(v);
-  return wrap;
-}
-function tile(title, bodyEl){
-  const t = document.createElement('div'); t.className='tile';
-  const hd = document.createElement('div'); hd.className='hd'; hd.textContent = title;
-  const bd = document.createElement('div'); bd.className='bd'; bd.appendChild(bodyEl);
-  t.appendChild(hd); t.appendChild(bd); return t;
-}
-function renderReport(rep){
-  const grid = $('#grid'); grid.innerHTML='';
-  // عامة
-  const gBody = document.createElement('div');
-  gBody.appendChild(kv('المتصفح', navigator.userAgent));
-  gBody.appendChild(kv('المنصة', navigator.platform || 'غير معروف'));
-  gBody.appendChild(kv('اللغة', navigator.language));
-  gBody.appendChild(kv('أونلاين', String(navigator.onLine)));
-  gBody.appendChild(kv('شاشة', `${window.screen.width}×${window.screen.height}`));
-  grid.appendChild(tile('عام', gBody));
-
-  // الشبكة
-  const nBody = document.createElement('div');
-  const net = rep.network;
-  if(net) {
-    nBody.appendChild(kv('Downlink (Mbps تقديري)', net.downlink ?? 'N/A'));
-    nBody.appendChild(kv('RTT (ms)', net.rtt ?? 'N/A'));
-    nBody.appendChild(kv('نوع الشبكة', net.effectiveType ?? 'N/A'));
-    nBody.appendChild(kv('توفير البيانات', String(net.saveData)));
-  } else {
-    nBody.appendChild(kv('حالة', 'لا تتوفر معلومات اتصال'));
-  }
-  const ping = rep.latency;
-  if(ping){
-    nBody.appendChild(kv('المتوسط (ms)', ping.avg !== null ? ping.avg.toFixed(1) : 'فشل'));
-    nBody.appendChild(kv('الأدنى (ms)', ping.min !== null ? ping.min.toFixed(1) : 'فشل'));
-    nBody.appendChild(kv('الأعلى (ms)', ping.max !== null ? ping.max.toFixed(1) : 'فشل'));
-  }
-  grid.appendChild(tile('الشبكة', nBody));
-
-  // WebGL/GPU
-  const wBody = document.createElement('div');
-  const w = rep.webgl;
-  wBody.appendChild(kv('مدعوم', String(!!(w && w.supported))));
-  if(w && w.supported){
-    wBody.appendChild(kv('Vendor', w.vendor));
-    wBody.appendChild(kv('Renderer', w.renderer));
-    wBody.appendChild(kv('Version', w.version));
-    wBody.appendChild(kv('GLSL', w.shading));
-    wBody.appendChild(kv('Max Texture Size', w.maxTexSize));
-    wBody.appendChild(kv('Texture Units', w.maxTextureImageUnits));
-  }
-  grid.appendChild(tile('WebGL/GPU', wBody));
-
-  // الذاكرة والتخزين
-  const mBody = document.createElement('div');
-  const mem = rep.memory;
-  if(mem){
-    mBody.appendChild(kv('JS Heap Limit', mem.jsHeapSizeLimit));
-    mBody.appendChild(kv('Total JS Heap', mem.totalJSHeapSize));
-    mBody.appendChild(kv('Used JS Heap', mem.usedJSHeapSize));
-  }else{
-    mBody.appendChild(kv('الذاكرة', 'غير متاح'));
-  }
-  const st = rep.storage;
-  if(st){
-    mBody.appendChild(kv('الحصة (bytes)', st.quota ?? 'N/A'));
-    mBody.appendChild(kv('الاستخدام (bytes)', st.usage ?? 'N/A'));
-  }else{
-    mBody.appendChild(kv('التخزين', 'غير متاح'));
-  }
-  grid.appendChild(tile('الذاكرة والتخزين', mBody));
-
-  // البطارية
-  const bBody = document.createElement('div');
-  const bat = rep.battery;
-  if(bat){
-    bBody.appendChild(kv('الشحن', String(bat.charging)));
-    bBody.appendChild(kv('المستوى (%)', String(bat.level)));
-    bBody.appendChild(kv('زمن الشحن (ث)', String(bat.chargingTime)));
-    bBody.appendChild(kv('زمن التفريغ (ث)', String(bat.dischargingTime)));
-  }else{
-    bBody.appendChild(kv('حالة', 'معلومات البطارية غير متاحة'));
-  }
-  grid.appendChild(tile('البطارية', bBody));
-
-  // دعم APIّات
-  const aBody = document.createElement('div'); aBody.className='list';
-  Object.entries(rep.apis).forEach(([k,v])=>{
-    const el = document.createElement('div'); el.className='kv';
-    const key = document.createElement('div'); key.className='k'; key.textContent = k;
-    const val = document.createElement('div'); val.className='v'; val.textContent = String(v);
-    el.appendChild(key); el.appendChild(val); aBody.appendChild(el);
-  });
-  grid.appendChild(tile('دعم APIّات', aBody));
-
-  // صلاحيات
-  const pBody = document.createElement('div');
-  const perms = rep.permissions;
-  if(perms){
-    Object.entries(perms).forEach(([k,v])=> pBody.appendChild(kv(k, v)));
-  }else{
-    pBody.appendChild(kv('حالة', 'واجهة الصلاحيات غير متاحة'));
-  }
-  grid.appendChild(tile('الصلاحيات', pBody));
-}
-
-/* ========= توليد التقرير ========= */
-async function scan(){
-  showToast('بدء الفحص…');
-  const url = $('#pingUrl').value.trim() || 'https://www.gstatic.com/generate_204';
-  const tries = Math.max(1, Math.min(10, Number($('#triesInp').value)||4));
-
-  const [latency, network, battery, memory, storage, webgl, apis, permissions] = await Promise.all([
-    measureLatency(url, tries),
-    Promise.resolve(estimateDownlink()),
-    getBattery(),
-    Promise.resolve(getMemory()),
-    getStorageEstimate(),
-    Promise.resolve(getWebGLInfo()),
-    Promise.resolve(getAPISupport()),
-    getPermissions()
-  ]);
-
-  const report = {
-    timestamp: new Date().toISOString(),
-    urlTarget: url,
-    latency, network, battery, memory, storage, webgl, apis, permissions
-  };
-  window._report = report;
-  renderReport(report);
-  showToast('اكتمل الفحص ✅');
-  return report;
-}
-
-/* ========= تصدير JSON / Markdown ========= */
-function downloadJson(){
-  const rep = window._report;
-  if(!rep){ showToast('نفّذ فحصاً أولاً', false); return; }
-  const blob = new Blob([JSON.stringify(rep, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const ts = new Date().toISOString().replace(/[:.]/g,'-');
-  a.href = url; a.download = `diagnostics-${ts}.json`;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=> URL.revokeObjectURL(url), 3000);
-  showToast('تم تنزيل JSON ✅');
-}
-function toMarkdown(rep){
-  const lines = [];
-  lines.push(`# تقرير فحص الجهاز والمتصفح`);
-  lines.push(`- الوقت: ${rep.timestamp}`);
-  lines.push(`- هدف الشبكة: ${rep.urlTarget}`);
-  lines.push(``);
-  lines.push(`## الشبكة`);
-  const lat = rep.latency;
-  lines.push(`- المتوسط: ${lat.avg!==null?lat.avg.toFixed(1):'فشل'} ms | الأدنى: ${lat.min!==null?lat.min.toFixed(1):'فشل'} | الأعلى: ${lat.max!==null?lat.max.toFixed(1):'فشل'}`);
-  const net = rep.network || {};
-  lines.push(`- Downlink: ${net.downlink ?? 'N/A'} Mbps | RTT: ${net.rtt ?? 'N/A'} ms | النوع: ${net.effectiveType ?? 'N/A'} | توفير البيانات: ${net.saveData ?? 'N/A'}`);
-  lines.push(``);
-  lines.push(`## WebGL/GPU`);
-  const w = rep.webgl || {}; lines.push(`- مدعوم: ${w.supported ? 'نعم' : 'لا'}`);
-  if(w.supported){
-    lines.push(`- Vendor: ${w.vendor}`); lines.push(`- Renderer: ${w.renderer}`); lines.push(`- Version: ${w.version}`);
-    lines.push(`- GLSL: ${w.shading}`); lines.push(`- Max Texture Size: ${w.maxTexSize}`); lines.push(`- Texture Units: ${w.maxTextureImageUnits}`);
-  }
-  lines.push(``);
-  lines.push(`## الذاكرة والتخزين`);
-  const mem = rep.memory || {};
-  lines.push(`- JS Heap Used: ${mem.usedJSHeapSize ?? 'N/A'} / Total: ${mem.totalJSHeapSize ?? 'N/A'} (Limit: ${mem.jsHeapSizeLimit ?? 'N/A'})`);
-  const st = rep.storage || {};
-  lines.push(`- الحصة: ${st.quota ?? 'N/A'} | الاستخدام: ${st.usage ?? 'N/A'}`);
-  lines.push(``);
-  lines.push(`## البطارية`);
-  const bat = rep.battery || {};
-  lines.push(`- شحن: ${bat.charging ?? 'N/A'} | مستوى: ${bat.level ?? 'N/A'}% | زمن الشحن: ${bat.chargingTime ?? 'N/A'} | التفريغ: ${bat.dischargingTime ?? 'N/A'}`);
-  lines.push(``);
-  lines.push(`## دعم APIّات`);
-  Object.entries(rep.apis || {}).forEach(([k,v])=> lines.push(`- ${k}: ${v}`));
-  lines.push(``);
-  lines.push(`## صلاحيات`);
-  Object.entries(rep.permissions || {}).forEach(([k,v])=> lines.push(`- ${k}: ${v}`));
-  return lines.join('\n');
-}
-function copyMarkdown(){
-  const rep = window._report;
-  if(!rep){ showToast('نفّذ فحصاً أولاً', false); return; }
-  const md = toMarkdown(rep);
-  navigator.clipboard.writeText(md).then(()=> showToast('نُسخ التقرير Markdown ✅'));
-}
-
 /* ========= حالة الاتصال ========= */
 function updateOnline(){ $('#offline').hidden = navigator.onLine; }
 window.addEventListener('online', updateOnline);
 window.addEventListener('offline', updateOnline);
 
+/* ========= مكتبة الفيديو ========= */
+let library = [];
+let currentIndex = -1;
+const LS_KEY = 'yotyosr.library';
+const LS_LAST = 'yotyosr.last';
+
+function loadLibrary(){
+  try{
+    library = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+  }catch{ library = []; }
+}
+function saveLibrary(){
+  localStorage.setItem(LS_KEY, JSON.stringify(library));
+}
+function setLast(index){
+  currentIndex = index;
+  localStorage.setItem(LS_LAST, String(index));
+}
+function getLast(){
+  const v = localStorage.getItem(LS_LAST);
+  return v ? Number(v) : -1;
+}
+
+/* ========= واجهة المكتبة ========= */
+function renderList(){
+  const q = ($('#searchInp').value || '').trim().toLowerCase();
+  const list = $('#list'); list.innerHTML = '';
+  library
+    .map((item, idx)=> ({item, idx}))
+    .filter(({item})=> item.title.toLowerCase().includes(q))
+    .forEach(({item, idx})=>{
+      const card = document.createElement('div'); card.className='card';
+      const th = document.createElement('img'); th.className='thumb'; th.alt='thumbnail';
+      th.src = item.thumb || '';
+      th.style.objectFit = 'cover';
+      const meta = document.createElement('div'); meta.className='meta';
+      const t = document.createElement('div'); t.className='title'; t.textContent = item.title;
+      const s = document.createElement('div'); s.className='sub'; s.textContent = item.duration ? `المدة: ${item.duration}` : '—';
+      meta.appendChild(t); meta.appendChild(s);
+      card.appendChild(th); card.appendChild(meta);
+
+      card.addEventListener('click', ()=> playIndex(idx));
+      list.appendChild(card);
+    });
+}
+
+/* ========= تشغيل الفيديو ========= */
+const player = $('#player');
+function playIndex(idx){
+  if(idx<0 || idx>=library.length) return;
+  const it = library[idx];
+  player.src = it.url;
+  player.playbackRate = Number($('#speedSel').value) || 1;
+  player.play().catch(()=>{ /* قد يحتاج المستخدم تفاعل */ });
+  setLast(idx);
+  updateNowInfo();
+}
+function updateNowInfo(){
+  const idx = currentIndex = getLast();
+  if(idx>=0 && library[idx]){
+    $('#nowInfo').textContent = `يشغّل: ${library[idx].title}`;
+  }else{
+    $('#nowInfo').textContent = 'لا يوجد فيديو قيد التشغيل';
+  }
+}
+$('#speedSel').addEventListener('change', ()=>{ player.playbackRate = Number($('#speedSel').value)||1; });
+$('#prevBtn').addEventListener('click', ()=> playIndex(Math.max(0, getLast()-1)));
+$('#nextBtn').addEventListener('click', ()=> playIndex(Math.min(library.length-1, getLast()+1)));
+$('#pipBtn').addEventListener('click', async ()=>{
+  if(document.pictureInPictureEnabled && !player.disablePictureInPicture){
+    try{ await player.requestPictureInPicture(); }catch(e){ showToast('تعذّر PiP', false); }
+  }else showToast('PiP غير مدعوم', false);
+});
+
+/* ========= إضافة عناصر ========= */
+function promptAddUrl(){
+  const url = prompt('أدخل رابط فيديو مباشر (MP4/HLS أو ملف Blob URL):');
+  if(!url) return;
+  const title = prompt('عنوان الفيديو:') || 'فيديو بدون عنوان';
+  const id = Date.now();
+  const item = { id, title, url, thumb:'', duration:'' };
+  library.unshift(item);
+  saveLibrary(); renderList(); showToast('تمت الإضافة ✅');
+}
+$('#addUrlBtn').addEventListener('click', promptAddUrl);
+$('#searchInp').addEventListener('input', renderList);
+$('#clearSearchBtn').addEventListener('click', ()=>{ $('#searchInp').value=''; renderList(); });
+
+/* ========= صور مصغّرة من الفيديو ========= */
+async function generateThumb(){
+  const idx = getLast();
+  if(idx<0 || !library[idx]){ showToast('شغّل فيديو أولاً', false); return; }
+  try{
+    // التأكد من توفّر إطار
+    if(player.readyState < 2){ await player.play().catch(()=>{}); await new Promise(r=> setTimeout(r, 300)); player.pause(); }
+    const cn = document.createElement('canvas'); cn.width = 320; cn.height = 180;
+    const ctx = cn.getContext('2d');
+    ctx.drawImage(player, 0, 0, cn.width, cn.height);
+    const url = cn.toDataURL('image/jpeg', 0.8);
+    library[idx].thumb = url;
+    saveLibrary(); renderList();
+    $('#thumbOut').innerHTML = 'تم توليد الصورة المصغّرة. <a href="'+url+'" target="_blank" style="color:#7dd3fc">فتح</a>';
+    showToast('صورة مصغّرة جاهزة ✅');
+  }catch(e){
+    console.error(e); showToast('تعذّر توليد صورة مصغّرة', false);
+  }
+}
+$('#thumbBtn').addEventListener('click', generateThumb);
+
+/* ========= استيراد / تصدير ========= */
+$('#exportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(library, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const ts = new Date().toISOString().replace(/[:.]/g,'-');
+  a.href = url; a.download = `yotyosr-library-${ts}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 3000);
+  showToast('تم تصدير المكتبة ✅');
+});
+$('#importBtn').addEventListener('click', async ()=>{
+  try{
+    const [f] = await window.showOpenFilePicker({types:[{description:'JSON', accept:{'application/json':['.json']}}]});
+    const file = await f.getFile();
+    const text = await file.text();
+    const arr = JSON.parse(text);
+    if(Array.isArray(arr)){
+      library = arr.filter(x=> x && x.url);
+      saveLibrary(); renderList();
+      showToast('تم الاستيراد ✅');
+    }else showToast('ملف غير صالح', false);
+  }catch(e){ showToast('أُلغي الاستيراد', false); }
+});
+
+/* ========= سحب وإفلات ملفات فيديو ========= */
+const drop = $('#dropZone');
+['dragenter','dragover'].forEach(ev=> drop.addEventListener(ev, e=>{ e.preventDefault(); drop.style.borderColor='#22d3ee'; }));
+['dragleave','drop'].forEach(ev=> drop.addEventListener(ev, e=>{ e.preventDefault(); drop.style.borderColor='rgba(255,255,255,.18)'; }));
+drop.addEventListener('drop', e=>{
+  const files = [...e.dataTransfer.files].filter(f=> f.type.startsWith('video/'));
+  if(!files.length){ showToast('لا توجد ملفات فيديو', false); return; }
+  files.forEach(f=>{
+    const url = URL.createObjectURL(f); // جلسة حالية فقط
+    const title = f.name;
+    library.unshift({ id: Date.now()+Math.random(), title, url, thumb:'', duration:'' });
+  });
+  saveLibrary(); renderList(); showToast('تمت إضافة ملفات الفيديو ✅');
+});
+
+/* ========= إظهار مدة الفيديو في القائمة ========= */
+player.addEventListener('loadedmetadata', ()=>{
+  const idx = getLast();
+  if(idx>=0 && library[idx]){
+    const d = player.duration;
+    const hh = Math.floor(d/3600);
+    const mm = Math.floor((d%3600)/60).toString().padStart(2,'0');
+    const ss = Math.floor(d%60).toString().padStart(2,'0');
+    library[idx].duration = hh>0 ? `${hh}:${mm}:${ss}` : `${mm}:${ss}`;
+    saveLibrary(); renderList();
+  }
+});
+
+/* ========= اختصارات لوحة المفاتيح ========= */
+document.addEventListener('keydown', (e)=>{
+  const k = e.key.toLowerCase();
+  if(k==='k'){ if(player.paused) player.play(); else player.pause(); }
+  if(k==='j'){ player.currentTime = Math.max(0, player.currentTime - 10); }
+  if(k==='l'){ player.currentTime = Math.min(player.duration||player.currentTime+10, player.currentTime + 10); }
+});
+
 /* ========= تثبيت PWA ========= */
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredPrompt = e;
+  e.preventDefault(); deferredPrompt = e;
   $('#installBtn').disabled = false;
   showToast('جاهز للتثبيت — اضغط زر تثبيت');
 });
@@ -490,7 +405,7 @@ $('#installBtn').addEventListener('click', async ()=>{
 /* ========= Service Worker واحد-ملف ========= */
 async function registerSW(){
   const swCode = `
-    const CACHE = 'diag-pwa-cache-v1';
+    const CACHE = 'yotyosr-cache-v1';
     const CORE = ['.'];
     self.addEventListener('install', e=>{
       e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));
@@ -503,12 +418,16 @@ async function registerSW(){
     self.addEventListener('fetch', e=>{
       const req = e.request;
       const url = new URL(req.url);
+      // Cache-first للصفحة الأساسية فقط؛ لا نخزّن فيديوهات كبيرة افتراضياً
       if(req.method==='GET' && url.origin===self.location.origin){
         e.respondWith(
           caches.match(req).then(res=>{
             return res || fetch(req).then(network=>{
               const copy = network.clone();
-              caches.open(CACHE).then(c=>c.put(req, copy));
+              // تجنّب تخزين ملفات الفيديو الكبيرة
+              if(!copy.headers.get('content-type')?.startsWith('video/')){
+                caches.open(CACHE).then(c=>c.put(req, copy)).catch(()=>{});
+              }
               return network;
             }).catch(()=> caches.match('.'));
           })
@@ -523,8 +442,7 @@ async function registerSW(){
     showToast('Service Worker جاهز 🛡️');
     setTimeout(()=> URL.revokeObjectURL(swUrl), 4000);
   }catch(err){
-    console.error(err);
-    showToast('تعذّر تسجيل Service Worker', false);
+    console.error(err); showToast('تعذر تسجيل Service Worker', false);
   }
 }
 
@@ -532,15 +450,17 @@ async function registerSW(){
 function init(){
   injectManifest();
   updateOnline();
+  loadLibrary();
+  renderList();
   registerSW();
-
-  $('#scanBtn').addEventListener('click', scan);
-  $('#copyMdBtn').addEventListener('click', copyMarkdown);
-  $('#downloadJsonBtn').addEventListener('click', downloadJson);
+  updateNowInfo();
 
   const params = new URLSearchParams(location.search);
-  if(params.has('scan')) scan();
-  if(params.has('md')) copyMarkdown();
+  if(params.has('add')) promptAddUrl();
+  if(params.has('resume')){
+    const idx = getLast();
+    if(idx>=0) playIndex(idx);
+  }
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
