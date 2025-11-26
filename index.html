@@ -2,641 +2,452 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>محرر فيديو زجاجي — زر تنزيل ظاهر</title>
-<link rel="manifest" href="/manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>بطاقات اقتباس — PWA واحد-ملف</title>
+<meta name="theme-color" content="#0ea5e9" />
+
 <style>
   :root{
-    --bg:#0a0f1f; --fg:#eaf2ff; --card:rgba(255,255,255,0.08);
-    --border:rgba(255,255,255,0.16); --accent:#4ca7ff; --accent2:#7bd7ff;
-    --glass: blur(18px) saturate(120%) contrast(105%);
-  }
-  @media (prefers-color-scheme: light){
-    :root{ --bg:#e9f1ff; --fg:#0c1730; --card:rgba(255,255,255,0.55); --border:rgba(16,50,90,0.12); }
+    --bg:#0b1220;
+    --glass:rgba(255,255,255,.08);
+    --glass-2:rgba(255,255,255,.14);
+    --text:#e6f2ff;
+    --muted:#a9c2d9;
+    --accent:#0ea5e9;
+    --accent-2:#22d3ee;
+    --danger:#ef4444;
+    --ok:#10b981;
+    --shadow: 0 20px 40px rgba(0,0,0,.35);
+    --radius:18px;
   }
   *{box-sizing:border-box}
-  body{
-    margin:0; font-family: ui-rounded, system-ui, "Segoe UI", Arial;
-    background:
-      radial-gradient(1200px 600px at 8% 12%, #0c1e44, transparent 60%),
-      radial-gradient(1000px 500px at 92% 0%, #0a314f, transparent 50%),
-      linear-gradient(180deg,var(--bg),var(--bg));
-    color:var(--fg); min-height:100vh;
+  html,body{
+    background: radial-gradient(1000px 700px at 10% 10%, #0f1b33 0%, #0b1220 45%, #070c16 100%);
+    color:var(--text); font-family: "Segoe UI", Tahoma, sans-serif; margin:0; min-height:100%;
   }
-  header{ padding:18px 12px; text-align:center; position:sticky; top:0; z-index:10;
-    background:linear-gradient(90deg,#4ca7ff22,#7bd7ff12); border-bottom:1px solid #ffffff1a; }
-  h1{ margin:0; font-size:20px; letter-spacing:.3px }
-  .container{ max-width:1100px; margin:22px auto; padding:0 14px }
-  .card{ background:var(--card); backdrop-filter:var(--glass); -webkit-backdrop-filter:var(--glass);
-    border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,0.22); }
-  label{ font-size:13px; color:#cfe5ff; margin-bottom:6px; display:block }
-  input[type="file"], select, input[type="number"], input[type="range"], input[type="text"], button{
-    width:100%; padding:10px 12px; border-radius:12px; border:1px solid #bfe1ff33;
-    background:linear-gradient(180deg,#091427,#0c1830); color:var(--fg); outline:none;
+  .container{
+    max-width:1000px; margin:0 auto; padding:24px;
   }
-  input[type="range"]{ accent-color:var(--accent) }
-  button{ cursor:pointer; font-weight:700; letter-spacing:.3px;
-    background:linear-gradient(180deg,var(--accent),var(--accent2)); color:#071120; border-color:#4ca7ff; box-shadow:0 6px 18px #4ca7ff44; }
-  button.secondary{ background:linear-gradient(180deg,#14223f,#1b2a4f); color:#d7e7ff; border-color:#2a3f66; }
-  button:disabled{ opacity:.55; cursor:not-allowed }
-  .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px }
-  .row-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px }
-  .help{ font-size:12px; color:#aac8e9 }
-  video, canvas{ width:100%; max-height:420px; background:#000; border-radius:16px; border:1px solid #28466c66; }
-  .badge{ display:inline-block; background:#0f2a4f99; border:1px solid #4ca7ff55; color:#bde1ff; padding:4px 8px; border-radius:999px; font-size:12px }
-  .stack{ display:flex; gap:10px; flex-wrap:wrap }
-  .small{ font-size:12px; color:#a9c8e9 }
-  .out{ font-size:12px; background:#0c172f; border:1px dashed #3a5a86; padding:8px; border-radius:12px }
-  .pill{ display:inline-flex; gap:6px; align-items:center; padding:6px 10px; border-radius:999px; background:#123155aa; border:1px solid #4ca7ff33; color:#cfe5ff; font-size:12px; text-decoration:none }
-  .thumbs img{ width:120px; border-radius:12px; border:1px solid #28466c66 }
-  #installBtn{ display:none; padding:8px 12px; border-radius:10px; background:#2ea0ff; color:#041226; border:none; font-weight:700; cursor:pointer; }
-  footer{ text-align:center; padding:14px; color:#9fbfe6; font-size:13px }
+  header{
+    display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:18px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 14px; border-radius:12px; background:var(--glass); backdrop-filter: blur(12px);
+    box-shadow: var(--shadow);
+  }
+  .brand canvas{ width:40px; height:40px; border-radius:10px; }
+  .brand .titles{ display:flex; flex-direction:column; }
+  .brand .titles .name{ font-weight:700; letter-spacing:.3px}
+  .brand .titles .sub{ color:var(--muted); font-size:.9rem }
+  .actions{ display:flex; gap:10px; flex-wrap:wrap }
+  button{
+    appearance:none; border:none; color:#fff; font-weight:600;
+    padding:10px 14px; border-radius:12px; cursor:pointer;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow: var(--shadow);
+  }
+  button.secondary{
+    background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+    color:var(--text);
+  }
+  button:disabled{ opacity:.6; cursor:not-allowed }
+  .card{
+    margin-top:16px; border-radius:var(--radius); background:var(--glass);
+    backdrop-filter: blur(18px); box-shadow: var(--shadow); overflow:hidden;
+  }
+  .canvas-wrap{ position:relative; }
+  #quoteCanvas{ width:100%; height:auto; display:block; }
+  .toolbar{
+    display:flex; gap:8px; padding:12px; border-top:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  }
+  .toolbar .group{ display:flex; gap:8px; flex-wrap:wrap }
+  .pill{
+    padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.08); color:var(--muted); font-size:.9rem
+  }
+  .input, select{
+    padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.06); color:var(--text);
+  }
+  .toast{
+    position:fixed; right:20px; bottom:20px; background:rgba(16,185,129,.15);
+    color:#d1fae5; border:1px solid rgba(16,185,129,.45);
+    padding:10px 14px; border-radius:12px; backdrop-filter: blur(10px); box-shadow: var(--shadow);
+    transform: translateY(20px); opacity:0; pointer-events:none; transition: .35s ease;
+  }
+  .toast.show{ transform: translateY(0); opacity:1; pointer-events:auto }
+  .offline{
+    position:fixed; left:20px; bottom:20px; background:rgba(239,68,68,.12);
+    color:#fecaca; border:1px solid rgba(239,68,68,.4);
+    padding:8px 12px; border-radius:10px; backdrop-filter: blur(10px);
+  }
+  .shortcuts{ margin-top:10px; color:var(--muted); font-size:.9rem }
+  a.link{ color:#7dd3fc; text-decoration:none }
+  .hint{ color:var(--muted); margin-top:8px }
 </style>
+
+<!-- سيتم حقن أيقونة ومانيفست ديناميكياً عبر السكربت أدناه -->
+<link id="appIconLink" rel="icon" type="image/png" />
+<link id="manifestLink" rel="manifest" />
+
 </head>
 <body>
-<header>
-  <h1>محرر فيديو زجاجي — زر تنزيل ظاهر</h1>
-  <div class="small">الزر ظاهر دايمًا؛ يتفعل عند تجهيز الفيديو</div>
-</header>
-
 <div class="container">
+  <header>
+    <div class="brand">
+      <canvas id="appIconCanvas" width="128" height="128" aria-hidden="true"></canvas>
+      <div class="titles">
+        <div class="name">بطاقات اقتباس</div>
+        <div class="sub">PWA واحد-ملف | يعمل أوفلاين | تنزيل الصور</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="installBtn" title="تثبيت التطبيق" disabled>تثبيت</button>
+      <button id="newQuoteBtn">اقتباس جديد</button>
+      <button id="downloadBtn" class="secondary">تنزيل الصورة</button>
+    </div>
+  </header>
 
   <div class="card">
-    <div class="row">
-      <div>
-        <label>اختيار فيديو</label>
-        <input id="videoFile" type="file" accept="video/*">
-      </div>
-      <div>
-        <label>اختيار موسيقى</label>
-        <input id="audioFile" type="file" accept="audio/*">
-      </div>
+    <div class="canvas-wrap">
+      <canvas id="quoteCanvas" width="1200" height="630" aria-label="صورة الاقتباس"></canvas>
     </div>
-
-    <div class="row-3" style="margin-top:10px">
-      <div>
-        <label>كتم صوت الفيديو الأصلي</label>
-        <select id="muteOriginal">
-          <option value="yes">نعم</option>
-          <option value="no" selected>لا</option>
+    <div class="toolbar">
+      <div class="group">
+        <span class="pill">نمط الخلفية:</span>
+        <select id="bgStyle">
+          <option value="gradient">تدرج زجاجي</option>
+          <option value="mesh">شبكة لونية</option>
+          <option value="solid">لون ثابت</option>
         </select>
       </div>
-      <div>
-        <label>مستوى الموسيقى الخارجية</label>
-        <input id="audioGain" type="range" min="0" max="2" step="0.05" value="1">
-        <div class="help">0 صامت — 2 مضاعف</div>
-      </div>
-      <div>
-        <label>سرعة التشغيل</label>
-        <select id="rate">
-          <option>0.75</option>
-          <option selected>1</option>
-          <option>1.25</option>
-          <option>1.5</option>
-          <option>2</option>
+      <div class="group">
+        <span class="pill">الحجم:</span>
+        <select id="sizeSel">
+          <option value="1200x630">1200×630 (Social)</option>
+          <option value="1024x1024">1024×1024</option>
+          <option value="1080x1920">1080×1920 (Story)</option>
         </select>
       </div>
-    </div>
-
-    <div class="row-3" style="margin-top:10px">
-      <div>
-        <label>بداية القص (ثانية)</label>
-        <input id="startSec" type="number" min="0" value="0">
-      </div>
-      <div>
-        <label>نهاية القص (ثانية)</label>
-        <input id="endSec" type="number" min="0" placeholder="مثال: 15">
-      </div>
-      <div>
-        <label>انتقال الفيديو</label>
-        <select id="videoTransition">
-          <option value="none">بدون</option>
-          <option value="fade">تلاشي (Fade)</option>
-          <option value="flash">وميض خفيف</option>
+      <div class="group">
+        <span class="pill">خط:</span>
+        <select id="fontSel">
+          <option value="system">System UI</option>
+          <option value="serif">Serif</option>
+          <option value="mono">Monospace</option>
         </select>
       </div>
-    </div>
-
-    <div class="row-3" style="margin-top:10px">
-      <div>
-        <label>فلتر الفيديو</label>
-        <select id="filter">
-          <option value="none">بدون</option>
-          <option value="grayscale(100%)">أبيض وأسود</option>
-          <option value="sepia(80%)">سيبيا</option>
-          <option value="brightness(1.25)">سطوع أعلى</option>
-          <option value="contrast(1.25)">تباين أعلى</option>
-          <option value="saturate(1.3)">تشبيع أعلى</option>
-          <option value="invert(100%)">عكس الألوان</option>
-          <option value="blur(2px)">تمويه خفيف</option>
-        </select>
-      </div>
-      <div>
-        <label>جودة التصدير</label>
-        <select id="quality">
-          <option value="720" selected>720p (أسرع)</option>
-          <option value="480">480p (أسرع جداً)</option>
-          <option value="full">Full (أصلية)</option>
-        </select>
-      </div>
-      <div>
-        <label>FPS للتصدير</label>
-        <select id="fps">
-          <option>30</option>
-          <option selected>24</option>
-          <option>20</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row-3" style="margin-top:10px">
-      <div>
-        <label>شدة التوهج/التلوين</label>
-        <input id="filterExtra" type="range" min="0" max="1" step="0.01" value="0">
-      </div>
-      <div>
-        <label>لون التوهج</label>
-        <input id="glowColor" type="text" value="#4ca7ff">
-      </div>
-      <div>
-        <label>bitsPerSecond (تقريبي)</label>
-        <select id="bits">
-          <option value="1500000" selected>1.5 Mbps (سريع وصغير)</option>
-          <option value="2500000">2.5 Mbps (توازن)</option>
-          <option value="4000000">4 Mbps (جودة أعلى)</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row" style="margin-top:10px">
-      <div>
-        <label>إضافة صورة Overlay</label>
-        <input id="imageFile" type="file" accept="image/*">
-        <div class="help">تظهر فوق الفيديو — يتم تحويلها إلى ImageBitmap للتسريع</div>
-      </div>
-      <div>
-        <label>نص Overlay</label>
-        <input id="overlayText" type="text" placeholder="اكتب نصًا يظهر فوق الفيديو">
-      </div>
-    </div>
-
-    <div class="row-3" style="margin-top:10px">
-      <div>
-        <label>حركة الصورة</label>
-        <select id="imageAnim">
-          <option value="none">بدون</option>
-          <option value="slide">انزلاق</option>
-          <option value="float">تعويم</option>
-          <option value="spin">دوران</option>
-          <option value="zoom">تكبير</option>
-        </select>
-      </div>
-      <div>
-        <label>موضع الصورة X</label>
-        <input id="imgX" type="number" value="40">
-      </div>
-      <div>
-        <label>موضع الصورة Y</label>
-        <input id="imgY" type="number" value="40">
-      </div>
-    </div>
-
-    <div class="stack" style="margin-top:12px">
-      <button id="snapshot" class="secondary">التقاط صورة</button>
-      <button id="export">بدء التصدير</button>
-
-      <!-- الزر ظاهر دايمًا لكن معطّل حتى يصبح جاهز -->
-      <button id="downloadBtn" class="pill" style="display:inline-flex" disabled>⬇️ تنزيل الفيديو</button>
-
-      <button id="installBtn">تثبيت التطبيق</button>
-      <span class="badge" id="status">جاهز</span>
     </div>
   </div>
 
-  <div class="card preview" style="margin-top:14px">
-    <div style="flex:1;min-width:280px">
-      <label>معاينة الفيديو</label>
-      <video id="video" controls playsinline></video>
-    </div>
-    <div style="flex:1;min-width:280px">
-      <label>لوحة المعالجة (Canvas)</label>
-      <canvas id="canvas"></canvas>
-      <div class="out" id="log"></div>
-      <div class="thumbs stack" id="thumbs"></div>
-    </div>
+  <div class="shortcuts">
+    اختصارات PWA: فتح الاقتباس الجديد بسرعة، تنزيل الصورة، وضع غامق افتراضي. بعد التثبيت ستجدها في قائمة التطبيقات.
   </div>
-
-  <div class="card" style="margin-top:14px">
-    <div class="small">ملاحظة: التصدير ينتج WebM (VP8/VP9). لملفات MP4 استخدمي تحويل خارجي أو ffmpeg.wasm لاحقًا.</div>
-  </div>
-
+  <div class="hint">نصيحة: يعمل أوفلاين بعد أول زيارة. أيقونة التطبيق مُولّدة من داخل الصفحة 👌</div>
 </div>
 
-<footer>احفظ الملف باسم index.html وارفعه مع manifest.json و sw.js و أيقونات في جذر المستودع</footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="offline" class="offline" hidden>أنت أوفلاين الآن — لا تقلق، التطبيق يعمل دون اتصال.</div>
 
 <script>
-(async function(){
-  const els = {
-    videoFile: document.getElementById('videoFile'),
-    audioFile: document.getElementById('audioFile'),
-    imageFile: document.getElementById('imageFile'),
-    startSec: document.getElementById('startSec'),
-    endSec: document.getElementById('endSec'),
-    muteOriginal: document.getElementById('muteOriginal'),
-    filter: document.getElementById('filter'),
-    filterExtra: document.getElementById('filterExtra'),
-    glowColor: document.getElementById('glowColor'),
-    rate: document.getElementById('rate'),
-    audioGain: document.getElementById('audioGain'),
-    overlayText: document.getElementById('overlayText'),
-    imageAnim: document.getElementById('imageAnim'),
-    imgX: document.getElementById('imgX'),
-    imgY: document.getElementById('imgY'),
-    video: document.getElementById('video'),
-    canvas: document.getElementById('canvas'),
-    snapshot: document.getElementById('snapshot'),
-    exportBtn: document.getElementById('export'),
-    downloadBtn: document.getElementById('downloadBtn'),
-    status: document.getElementById('status'),
-    log: document.getElementById('log'),
-    thumbs: document.getElementById('thumbs'),
-    quality: document.getElementById('quality'),
-    fps: document.getElementById('fps'),
-    bits: document.getElementById('bits'),
-    installBtn: document.getElementById('installBtn')
+/* ========= أدوات بسيطة ========= */
+const $ = sel => document.querySelector(sel);
+const showToast = (msg, ok=true) => {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.style.background = ok ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.12)';
+  t.style.color = ok ? '#d1fae5' : '#fecaca';
+  t.style.borderColor = ok ? 'rgba(16,185,129,.45)' : 'rgba(239,68,68,.4)';
+  t.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(()=> t.classList.remove('show'), 3000);
+};
+
+/* ========= توليد أيقونة ديناميكية (Canvas -> DataURL) ========= */
+function generateIcon(size=192){
+  const c = $('#appIconCanvas');
+  c.width = size; c.height = size;
+  const ctx = c.getContext('2d');
+
+  // خلفية متدرجة زجاجية
+  const g = ctx.createLinearGradient(0,0,size,size);
+  g.addColorStop(0, '#0ea5e9');
+  g.addColorStop(1, '#22d3ee');
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,size,size);
+
+  // دوائر براقة
+  for(let i=0;i<6;i++){
+    const r = Math.random()*size*0.18 + size*0.08;
+    const x = Math.random()*size;
+    const y = Math.random()*size;
+    const g2 = ctx.createRadialGradient(x,y,0,x,y,r);
+    g2.addColorStop(0, 'rgba(255,255,255,0.35)');
+    g2.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g2;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  }
+
+  // حرف زخرفي
+  ctx.fillStyle = 'rgba(255,255,255,.95)';
+  ctx.font = `${Math.floor(size*0.5)}px serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = size*0.06;
+  ctx.fillText('ق', size/2, size/2);
+
+  return c.toDataURL('image/png');
+}
+
+/* ========= حقن الـ favicon والـ manifest من داخل الصفحة ========= */
+async function injectManifest(){
+  const icon192 = generateIcon(192);
+  const icon512 = generateIcon(512);
+
+  // favicon
+  const iconLink = $('#appIconLink');
+  iconLink.href = icon192;
+
+  // manifest كـ data:URL
+  const manifest = {
+    name: "بطاقات اقتباس — واحد-ملف",
+    short_name: "اقتباس",
+    start_url: ".",
+    scope: ".",
+    display: "standalone",
+    background_color: "#0b1220",
+    theme_color: "#0ea5e9",
+    description: "تطبيق PWA زجاجي يولّد اقتباسات، يعمل أوفلاين وقابل للتثبيت.",
+    icons: [
+      { src: icon192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
+      { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+    ],
+    shortcuts: [
+      { name: "اقتباس جديد", url: "./?new=1", description: "توليد اقتباس جديد" },
+      { name: "تنزيل الصورة", url: "./?dl=1", description: "حفظ البطاقة كصورة" }
+    ]
   };
+  const manifestStr = JSON.stringify(manifest);
+  const manifestDataUrl = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(manifestStr)));
+  const manifestLink = $('#manifestLink');
+  manifestLink.href = manifestDataUrl;
 
-  let audio = null, audioCtx=null, gainNode=null, audioSource=null;
-  let overlayImg = null, overlayBitmap = null;
-  let recorder = null, recordedBlobs=[], exporting=false;
-  let lastOutputUrl = null;
-  let deferredPrompt = null;
+  showToast('تم تجهيز الأيقونة والمانيفست ✅');
+}
 
-  function log(msg){ const p=document.createElement('div'); p.textContent=msg; els.log.appendChild(p); }
-  function setStatus(s){ els.status.textContent = s; }
+/* ========= مولّد الاقتباسات والخلفيات ========= */
+const QUOTES = [
+  "ابدأ حيث أنت، واستخدم ما لديك، وافعل ما تستطيع.",
+  "التركيز يسبق الإنجاز.",
+  "تعلّم بسرعة، وكرّر بذكاء.",
+  "الوضوح قوة.",
+  "الاستمرارية تتفوق على الكمال.",
+  "اعمل على ما يهم حقًا."
+];
 
-  // تحميل الفيديو
-  els.videoFile.addEventListener('change', e=>{
-    const file = e.target.files?.[0]; if(!file) return;
-    const url = URL.createObjectURL(file);
-    els.video.src = url; els.video.load();
-    els.video.onloadedmetadata = ()=>{
-      els.canvas.width = els.video.videoWidth || 1280;
-      els.canvas.height = els.video.videoHeight || 720;
-      setStatus('فيديو جاهز: ' + Math.round(els.video.duration) + ' ثانية');
-    };
-  });
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
 
-  // تحميل الصوت
-  els.audioFile.addEventListener('change', e=>{
-    const file = e.target.files?.[0]; if(!file) return;
-    if(audio){ audio.pause(); audio=null; }
-    const url = URL.createObjectURL(file);
-    audio = new Audio(url); audio.crossOrigin='anonymous'; audio.preload='auto';
-    log('تم تحميل الموسيقى');
-  });
+function setCanvasSize(w,h){
+  const cn = $('#quoteCanvas');
+  cn.width = w; cn.height = h;
+}
 
-  // تحميل صورة Overlay وتحويلها إلى ImageBitmap فوراً لتسريع الرسم
-  els.imageFile.addEventListener('change', async e=>{
-    const file = e.target.files?.[0]; if(!file) return;
-    const url = URL.createObjectURL(file);
-    overlayImg = new Image();
-    overlayImg.src = url;
-    overlayImg.onload = async ()=>{
-      try{
-        if('createImageBitmap' in window){
-          overlayBitmap = await createImageBitmap(overlayImg);
-          log('تم تحويل الصورة إلى ImageBitmap للتسريع');
-        } else {
-          overlayBitmap = null;
-          log('createImageBitmap غير مدعوم، سيتم استخدام drawImage العادي');
-        }
-      }catch(err){
-        overlayBitmap = null;
-        log('خطأ في createImageBitmap، سيتم استخدام drawImage العادي');
-      }
-    };
-  });
-
-  // لقطة سريعة
-  els.snapshot.addEventListener('click', ()=>{
-    if(!els.video.src) return;
-    const ctx = els.canvas.getContext('2d');
-    drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime);
-    els.canvas.toBlob((blob)=>{
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(blob);
-      els.thumbs.appendChild(img);
-    }, 'image/png');
-  });
-
-  // ضبط حجم canvas حسب الجودة
-  function setCanvasSizeForQuality(q){
-    const vW = els.video.videoWidth || 1280;
-    const vH = els.video.videoHeight || 720;
-    if(q === '720'){
-      const scale = Math.min(1, 1280 / Math.max(vW, vH));
-      els.canvas.width = Math.round(vW * scale);
-      els.canvas.height = Math.round(vH * scale);
-    } else if(q === '480'){
-      const scale = Math.min(1, 854 / Math.max(vW, vH));
-      els.canvas.width = Math.round(vW * scale);
-      els.canvas.height = Math.round(vH * scale);
-    } else {
-      els.canvas.width = vW; els.canvas.height = vH;
+function drawBackground(ctx, w, h, style){
+  if(style==='solid'){
+    ctx.fillStyle = '#0b1220'; ctx.fillRect(0,0,w,h);
+  }else if(style==='mesh'){
+    const grad = ctx.createLinearGradient(0,0,w,h);
+    grad.addColorStop(0, '#0ea5e9'); grad.addColorStop(1, '#22d3ee');
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<8;i++){
+      const rx = Math.random()*w, ry = Math.random()*h;
+      const r = Math.random()*Math.min(w,h)*0.25;
+      const g = ctx.createRadialGradient(rx,ry,0,rx,ry,r);
+      g.addColorStop(0,'rgba(255,255,255,.15)');
+      g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(rx,ry,r,0,Math.PI*2); ctx.fill();
+    }
+  }else{
+    const grad = ctx.createLinearGradient(0,0,w,h);
+    grad.addColorStop(0, '#0f1b33'); grad.addColorStop(1, '#0b1220');
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
+    // طبقة زجاجية لطيفة
+    for(let i=0;i<6;i++){
+      const gx = Math.random()*w, gy = Math.random()*h;
+      const r = Math.random()*Math.min(w,h)*0.18 + Math.min(w,h)*0.08;
+      const g = ctx.createRadialGradient(gx,gy,0,gx,gy,r);
+      g.addColorStop(0,'rgba(255,255,255,.10)');
+      g.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(gx,gy,r,0,Math.PI*2); ctx.fill();
     }
   }
+}
 
-  // رسم الإطار المركب (مبسط قدر الإمكان)
-  function drawCompositeFrame(ctx, video, canvas, t){
-    const w = canvas.width, h = canvas.height;
-    const start = parseFloat(document.getElementById('startSec')?.value || 0) || 0;
-    const end = parseFloat(document.getElementById('endSec')?.value || video.duration) || video.duration;
-    const dur = Math.max(0.001, end - start);
-    const tr = document.getElementById('videoTransition')?.value || 'none';
-    let alpha = 1;
-    if(tr === 'fade'){
-      const dIn = Math.min(1.5, Math.max(0.3, dur*0.1));
-      const dOut = Math.min(1.5, Math.max(0.3, dur*0.12));
-      const localT = Math.min(Math.max(t - start, 0), dur);
-      if(localT < dIn) alpha = localT / dIn;
-      else if(localT > dur - dOut) alpha = Math.max(0, (dur - localT) / dOut);
-    } else if(tr === 'flash'){
-      alpha = 1 - Math.max(0, 0.1 * Math.sin((t - start) * 10));
+function drawQuote(){
+  const cn = $('#quoteCanvas');
+  const ctx = cn.getContext('2d');
+  const style = $('#bgStyle').value;
+  const fontSel = $('#fontSel').value;
+
+  drawBackground(ctx, cn.width, cn.height, style);
+
+  const pad = Math.round(cn.width * 0.08);
+  const maxWidth = cn.width - pad*2;
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const fontBase = fontSel==='serif' ? 'Georgia, serif' :
+                   fontSel==='mono' ? 'Consolas, monospace' :
+                   'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu';
+  const titleSize = Math.round(cn.height*0.08);
+  const bodySize = Math.round(cn.height*0.06);
+
+  // عنوان صغير
+  ctx.font = `bold ${Math.round(cn.height*0.035)}px ${fontBase}`;
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  ctx.fillText('بطاقة اقتباس', cn.width/2, Math.round(cn.height*0.12));
+
+  // الاقتباس
+  const quote = pick(QUOTES);
+  ctx.font = `bold ${bodySize}px ${fontBase}`;
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(0,0,0,.35)';
+  ctx.shadowBlur = Math.round(cn.height*0.012);
+
+  // التفاف بسيط للنص
+  function wrapText(text, x, y, maxW, lineHeight){
+    const words = text.split(' ');
+    let line = '';
+    const lines = [];
+    for(let w of words){
+      const test = line ? line + ' ' + w : w;
+      const metrics = ctx.measureText(test);
+      if(metrics.width > maxW && line){
+        lines.push(line); line = w;
+      }else line = test;
     }
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.filter = els.filter.value === 'none' ? 'none' : els.filter.value;
-    // رسم الفيديو
-    ctx.drawImage(video, 0, 0, w, h);
-    ctx.restore();
-
-    // تلوين خفيف
-    const extra = parseFloat(els.filterExtra.value) || 0;
-    if(extra > 0){
-      ctx.save();
-      ctx.globalAlpha = extra * 0.25;
-      ctx.fillStyle = els.glowColor.value || '#4ca7ff';
-      ctx.fillRect(0, 0, w, h);
-      ctx.restore();
-    }
-
-    // رسم overlay باستخدام ImageBitmap إن وُجد
-    if(overlayBitmap){
-      ctx.save();
-      const baseX = parseFloat(els.imgX.value) || 40;
-      const baseY = parseFloat(els.imgY.value) || 40;
-      let x = baseX, y = baseY, scale = 1, rot = 0;
-      const anim = els.imageAnim.value;
-      if(anim === 'slide'){ x = baseX + Math.sin(t * 0.8) * 40; }
-      else if(anim === 'float'){ y = baseY + Math.sin(t * 1.2) * 30; }
-      else if(anim === 'spin'){ rot = Math.sin(t * 0.6) * 0.15; }
-      else if(anim === 'zoom'){ scale = 1 + Math.sin(t * 0.5) * 0.08; }
-      const ow = Math.min(w / 3, overlayBitmap.width);
-      const oh = ow * (overlayBitmap.height / overlayBitmap.width);
-      ctx.translate(x + ow/2, y + oh/2);
-      ctx.rotate(rot);
-      ctx.scale(scale, scale);
-      ctx.globalAlpha = 0.92;
-      ctx.drawImage(overlayBitmap, -ow/2, -oh/2, ow, oh);
-      ctx.restore();
-    } else if(overlayImg){
-      // fallback: drawImage العادي
-      ctx.save();
-      const baseX = parseFloat(els.imgX.value) || 40;
-      const baseY = parseFloat(els.imgY.value) || 40;
-      const ow = Math.min(w / 3, overlayImg.width);
-      const oh = ow * (overlayImg.height / overlayImg.width);
-      ctx.globalAlpha = 0.92;
-      ctx.drawImage(overlayImg, baseX, baseY, ow, oh);
-      ctx.restore();
-    }
-
-    // نص
-    const txt = els.overlayText.value.trim();
-    if(txt){
-      ctx.save();
-      ctx.globalAlpha = 0.95;
-      ctx.font = Math.round(h * 0.045) + 'px "Segoe UI", Arial';
-      ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = els.glowColor.value || '#4ca7ff';
-      ctx.shadowBlur = 18;
-      ctx.textAlign = 'center';
-      ctx.fillText(txt, w/2, h - 28);
-      ctx.restore();
-    }
-  }
-
-  // التصدير (محسّن)
-  els.exportBtn.addEventListener('click', async ()=>{
-    if(exporting) return;
-    if(!els.video.src){ alert('حمّل فيديو أولاً'); return; }
-    setStatus('بدء التصدير…'); exporting = true; recordedBlobs = []; els.log.innerHTML = '';
-
-    // ضبط جودة ودقة
-    setCanvasSizeForQuality(els.quality.value);
-    const fps = parseInt(els.fps.value || '24', 10);
-    const bitsPerSecond = parseInt(els.bits.value || '1500000', 10);
-
-    const ctx = els.canvas.getContext('2d');
-
-    // استخدم captureStream مع fps منخفض لتسريع
-    const stream = els.canvas.captureStream(fps);
-
-    // صوت الفيديو الأصلي (اختياري)
-    const addOriginal = (els.muteOriginal.value === 'no');
-    if(addOriginal){
-      try{
-        const vStream = els.video.captureStream();
-        const vTracks = vStream.getAudioTracks();
-        if(vTracks.length) stream.addTrack(vTracks[0]);
-      }catch(e){}
-      els.video.muted = false;
-    } else {
-      els.video.muted = true;
-    }
-
-    // صوت خارجي عبر WebAudio (مبسط)
-    if(audio){
-      try{
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        gainNode = audioCtx.createGain();
-        gainNode.gain.value = parseFloat(els.audioGain.value) || 1;
-        audioSource = audioCtx.createMediaElementSource(audio);
-        const dest = audioCtx.createMediaStreamDestination();
-        audioSource.connect(gainNode).connect(dest);
-        audioSource.connect(gainNode).connect(audioCtx.destination);
-        const aTracks = dest.stream.getAudioTracks();
-        if(aTracks.length) stream.addTrack(aTracks[0]);
-      }catch(e){
-        log('تعذر إعداد WebAudio: ' + e.message);
-      }
-    }
-
-    // إعداد MediaRecorder بخيارات سريعة (vp8 غالباً أسرع على بعض الأجهزة)
-    const opts = { mimeType: 'video/webm;codecs=vp8', bitsPerSecond: bitsPerSecond };
-    let finalOpts = opts;
-    if(!MediaRecorder.isTypeSupported(opts.mimeType)){
-      finalOpts = { mimeType: 'video/webm;codecs=vp9', bitsPerSecond: bitsPerSecond };
-      if(!MediaRecorder.isTypeSupported(finalOpts.mimeType)) finalOpts = { mimeType: 'video/webm' };
-    }
-
-    try{
-      recorder = new MediaRecorder(stream, finalOpts);
-    }catch(err){
-      recorder = new MediaRecorder(stream);
-    }
-
-    let totalBytes = 0;
-    recorder.ondataavailable = e=>{
-      if(e.data && e.data.size){
-        recordedBlobs.push(e.data);
-        totalBytes += e.data.size;
-        setStatus('تسجيل... حجم مؤقت: ' + Math.round(totalBytes/1024) + ' KB');
-      }
-    };
-
-    // استبدال onstop بمقطع موثوق يعرض زر التنزيل
-    recorder.onstop = () => {
-      try {
-        const blob = new Blob(recordedBlobs, { type: finalOpts.mimeType || 'video/webm' });
-        if (lastOutputUrl) {
-          try { URL.revokeObjectURL(lastOutputUrl); } catch(e){}
-          lastOutputUrl = null;
-        }
-        const url = URL.createObjectURL(blob);
-        lastOutputUrl = url;
-
-        // تفعيل زر التنزيل (الزر ظاهر دايمًا لكن كان معطّل)
-        els.downloadBtn.disabled = false;
-        els.downloadBtn.dataset.blobUrl = url;
-
-        setStatus('جاهز للتنزيل');
-        log('الحجم النهائي: ' + Math.round(blob.size/1024) + ' KB');
-        showToast('تم تجهيز الفيديو للتنزيل');
-      } catch (err) {
-        console.error('onstop error:', err);
-        setStatus('خطأ أثناء تجهيز الملف');
-        showToast('حدث خطأ أثناء تجهيز الملف');
-      }
-    };
-
-    // ابدأ التسجيل مع timeslice أكبر لتقليل overhead
-    recorder.start(500);
-
-    // تشغيل ومزامنة
-    const rate = parseFloat(els.rate.value) || 1;
-    els.video.playbackRate = rate;
-    if(audio){ audio.playbackRate = rate; audio.currentTime = 0; }
-
-    const start = Math.max(0, parseFloat(document.getElementById('startSec')?.value || 0) || 0);
-    const end = parseFloat(document.getElementById('endSec')?.value || NaN);
-    const hasEnd = !isNaN(end) && end > start;
-
-    els.video.currentTime = start;
-    await els.video.play();
-    if(audio) await audio.play();
-
-    // استخدم requestVideoFrameCallback إن وُجد لمزامنة أسرع مع إطار الفيديو
-    let stopReq = false;
-    const useRVFC = typeof els.video.requestVideoFrameCallback === 'function';
-    if(useRVFC){
-      const rvfc = (now, metadata) => {
-        if(stopReq) return;
-        drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime);
-        const t = els.video.currentTime;
-        if(hasEnd && t >= end){ stopReq = true; finish(); return; }
-        try{ els.video.requestVideoFrameCallback(rvfc); }catch(e){ requestAnimationFrame(()=>rvfc(now, metadata)); }
-      };
-      try{ els.video.requestVideoFrameCallback(rvfc); }catch(e){ requestAnimationFrame(function loop(){ if(stopReq) return; drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime); const t=els.video.currentTime; if(hasEnd && t>=end){ stopReq=true; finish(); return;} requestAnimationFrame(loop); }); }
-    } else {
-      // fallback إلى requestAnimationFrame
-      function rafLoop(){
-        if(stopReq) return;
-        drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime);
-        const t = els.video.currentTime;
-        if(hasEnd && t >= end){ stopReq = true; finish(); return; }
-        requestAnimationFrame(rafLoop);
-      }
-      requestAnimationFrame(rafLoop);
-    }
-
-    async function finish(){
-      try{
-        els.video.pause(); if(audio) audio.pause();
-        recorder.stop(); exporting = false; setStatus('اكتمل التصدير');
-      }catch(err){
-        log('خطأ أثناء الإيقاف: ' + err.message); exporting = false; setStatus('فشل التصدير');
-      }
-    }
-  });
-
-  // زر التنزيل: سلوك زر حقيقي يقوم بإنشاء رابط مؤقت وتحميله ثم تنظيف الذاكرة
-  els.downloadBtn.addEventListener('click', (e)=>{
-    const url = e.currentTarget.dataset.blobUrl;
-    if(!url) {
-      showToast('لا يوجد ملف جاهز للتنزيل');
-      return;
-    }
-    const filename = 'edited-video.webm';
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    els.downloadBtn.disabled = true;
-    setTimeout(()=> {
-      try{ URL.revokeObjectURL(url); }catch{}
-      if(lastOutputUrl === url) lastOutputUrl = null;
-      // الزر يبقى ظاهر لكن معطّل بعد التنزيل
-      setStatus('تم التنزيل');
-    }, 2500);
-  });
-
-  // معاينة فلتر مباشر
-  els.filter.addEventListener('change', ()=>{ els.canvas.style.filter = els.filter.value; });
-  els.audioGain.addEventListener('input', ()=>{ if(gainNode) gainNode.gain.value = parseFloat(els.audioGain.value)||1; });
-
-  // Toast بسيط
-  function showToast(text){
-    const t = document.createElement('div');
-    t.textContent = text;
-    Object.assign(t.style, {
-      position:'fixed', left:'50%', transform:'translateX(-50%)', bottom:'24px',
-      background:'#0b2038', color:'#dff3ff', padding:'10px 16px', borderRadius:'12px',
-      boxShadow:'0 8px 24px rgba(0,0,0,0.4)', zIndex:9999, opacity:0, transition:'opacity .25s'
+    if(line) lines.push(line);
+    lines.forEach((l,i)=>{
+      ctx.fillText(l, x, y + i*lineHeight);
     });
-    document.body.appendChild(t);
-    requestAnimationFrame(()=> t.style.opacity = '1');
-    setTimeout(()=> { t.style.opacity='0'; setTimeout(()=> t.remove(),300); }, 3000);
   }
+  wrapText(quote, cn.width/2, cn.height/2, maxWidth, Math.round(bodySize*1.25));
 
-  // Install prompt handling
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    els.installBtn.style.display = 'inline-block';
-  });
+  // توقيع/هامش
+  ctx.shadowBlur = 0;
+  ctx.font = `600 ${Math.round(cn.height*0.032)}px ${fontBase}`;
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  ctx.fillText('— يومك المنتج يبدأ بكلمة', cn.width/2, cn.height - Math.round(cn.height*0.10));
+}
 
-  els.installBtn.addEventListener('click', async () => {
-    if(!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    els.installBtn.style.display = 'none';
-    if(choice && choice.outcome === 'accepted') showToast('تم تثبيت التطبيق');
-  });
+/* ========= تنزيل الصورة ========= */
+function downloadImage(){
+  const cn = $('#quoteCanvas');
+  const url = cn.toDataURL('image/png');
+  const a = document.createElement('a');
+  const ts = new Date().toISOString().replace(/[:.]/g,'-');
+  a.href = url; a.download = `quote-${ts}.png`;
+  document.body.appendChild(a); a.click(); a.remove();
+  showToast('تم تنزيل الصورة ✅');
+}
 
-  // تسجيل Service Worker من الجذر (sw.js يجب أن يكون في root)
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('/sw.js').then(()=> {
-      console.log('Service Worker registered from /sw.js');
-    }).catch(()=>{ console.log('SW registration failed'); });
+/* ========= حجم الق_canvas ========= */
+function applySize(){
+  const val = $('#sizeSel').value; // مثل 1200x630
+  const [w,h] = val.split('x').map(Number);
+  setCanvasSize(w,h);
+  drawQuote();
+}
+
+/* ========= تثبيت PWA ========= */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  $('#installBtn').disabled = false;
+  showToast('جاهز للتثبيت — اضغط زر تثبيت');
+});
+$('#installBtn').addEventListener('click', async ()=>{
+  if(!deferredPrompt){ return }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  $('#installBtn').disabled = true;
+  showToast(outcome==='accepted' ? 'تم التثبيت 🎉' : 'ألغيت التثبيت');
+});
+
+/* ========= مؤشرات الاتصال ========= */
+function updateOnline(){
+  const off = $('#offline');
+  if(navigator.onLine){ off.hidden = true; } else { off.hidden = false; }
+}
+window.addEventListener('online', updateOnline);
+window.addEventListener('offline', updateOnline);
+
+/* ========= Service Worker واحد-ملف ========= */
+async function registerSW(){
+  const swCode = `
+    const CACHE = 'quote-pwa-cache-v1';
+    const CORE = ['.']; // الصفحة نفسها
+    self.addEventListener('install', (e)=>{
+      e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', (e)=>{
+      e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', (e)=>{
+      const req = e.request;
+      const url = new URL(req.url);
+      // إستراتيجية: Try cache first for same-origin GETs
+      if(req.method==='GET' && url.origin===self.location.origin){
+        e.respondWith(
+          caches.match(req).then(res=>{
+            return res || fetch(req).then(network=>{
+              const copy = network.clone();
+              caches.open(CACHE).then(c=>c.put(req, copy));
+              return network;
+            }).catch(()=> caches.match('.'));
+          })
+        );
+      }
+    });
+  `;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  try{
+    const reg = await navigator.serviceWorker.register(swUrl, { scope: '.' });
+    showToast('Service Worker جاهز 🛡️');
+    // تنظيف URL blob بعد التسجيل
+    setTimeout(()=> URL.revokeObjectURL(swUrl), 4000);
+  }catch(err){
+    console.error(err);
+    showToast('تعذر تسجيل Service Worker', false);
   }
+}
 
-})();
+/* ========= تهيئة ========= */
+function init(){
+  injectManifest();
+  applySize();
+  drawQuote();
+  updateOnline();
+  registerSW();
+
+  $('#newQuoteBtn').addEventListener('click', drawQuote);
+  $('#downloadBtn').addEventListener('click', downloadImage);
+  $('#bgStyle').addEventListener('change', drawQuote);
+  $('#fontSel').addEventListener('change', drawQuote);
+  $('#sizeSel').addEventListener('change', applySize);
+
+  // معالجة الاختصارات من الـ manifest
+  const params = new URLSearchParams(location.search);
+  if(params.has('new')) drawQuote();
+  if(params.has('dl')) downloadImage();
+}
+
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
