@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>محرر فيديو زجاجي — تصدير أسرع</title>
+<title>محرر فيديو زجاجي — تصدير سريع وزر تنزيل</title>
 <link rel="manifest" href="/manifest.json">
 <style>
   :root{
@@ -55,8 +55,8 @@
 </head>
 <body>
 <header>
-  <h1>محرر فيديو زجاجي — تصدير أسرع</h1>
-  <div class="small">تم تحسين حلقة الرسم لاستخدام requestVideoFrameCallback و ImageBitmap</div>
+  <h1>محرر فيديو زجاجي — تصدير سريع وزر تنزيل</h1>
+  <div class="small">تحسينات للأداء وزر تنزيل فعلي يظهر بعد التصدير</div>
 </header>
 
 <div class="container">
@@ -497,20 +497,31 @@
       }
     };
 
-    recorder.onstop = ()=>{
-      const blob = new Blob(recordedBlobs, { type: finalOpts.mimeType || 'video/webm' });
-      if(lastOutputUrl) try{ URL.revokeObjectURL(lastOutputUrl); }catch{}
-      const url = URL.createObjectURL(blob);
-      lastOutputUrl = url;
+    // استبدال onstop بمقطع موثوق يعرض زر التنزيل
+    recorder.onstop = () => {
+      try {
+        const blob = new Blob(recordedBlobs, { type: finalOpts.mimeType || 'video/webm' });
+        if (lastOutputUrl) {
+          try { URL.revokeObjectURL(lastOutputUrl); } catch(e){}
+          lastOutputUrl = null;
+        }
+        const url = URL.createObjectURL(blob);
+        lastOutputUrl = url;
 
-      // تفعيل زر التنزيل كزر حقيقي
-      els.downloadBtn.disabled = false;
-      els.downloadBtn.style.display = 'inline-flex';
-      els.downloadBtn.dataset.blobUrl = url;
+        // تفعيل زر التنزيل كزر حقيقي
+        els.downloadBtn.disabled = false;
+        els.downloadBtn.style.display = 'inline-flex';
+        els.downloadBtn.textContent = '⬇️ تنزيل الفيديو';
+        els.downloadBtn.dataset.blobUrl = url;
 
-      setStatus('جاهز للتنزيل');
-      log('الحجم النهائي: ' + Math.round(blob.size/1024) + ' KB');
-      showToast('تم تجهيز الفيديو للتنزيل');
+        setStatus('جاهز للتنزيل');
+        log('الحجم النهائي: ' + Math.round(blob.size/1024) + ' KB');
+        showToast('تم تجهيز الفيديو للتنزيل');
+      } catch (err) {
+        console.error('onstop error:', err);
+        setStatus('خطأ أثناء تجهيز الملف');
+        showToast('حدث خطأ أثناء تجهيز الملف');
+      }
     };
 
     // ابدأ التسجيل مع timeslice أكبر لتقليل overhead
@@ -566,7 +577,10 @@
   // زر التنزيل: سلوك زر حقيقي يقوم بإنشاء رابط مؤقت وتحميله ثم تنظيف الذاكرة
   els.downloadBtn.addEventListener('click', (e)=>{
     const url = e.currentTarget.dataset.blobUrl;
-    if(!url) return;
+    if(!url) {
+      showToast('لا يوجد ملف جاهز للتنزيل');
+      return;
+    }
     const filename = 'edited-video.webm';
     const a = document.createElement('a');
     a.href = url;
