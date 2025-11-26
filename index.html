@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>محرر فيديو زجاجي — ملف واحد (محدث)</title>
+<title>محرر فيديو زجاجي — زر تنزيل كزر حقيقي</title>
 <link rel="manifest" href="/manifest.json">
 <style>
   :root{
@@ -55,8 +55,8 @@
 </head>
 <body>
 <header>
-  <h1>محرر فيديو زجاجي — نسخة محدثة</h1>
-  <div class="small">قابل للتثبيت، تحسين أداء التصدير، تنزيل آمن</div>
+  <h1>محرر فيديو زجاجي — زر تنزيل كزر حقيقي</h1>
+  <div class="small">الزر الآن زر حقيقي يقوم بتنزيل الملف بعد التعديل</div>
 </header>
 
 <div class="container">
@@ -204,7 +204,10 @@
     <div class="stack" style="margin-top:12px">
       <button id="snapshot" class="secondary">التقاط صورة</button>
       <button id="export">بدء التصدير</button>
-      <a id="download" class="pill" style="display:none" download="output.webm">⬇️ تنزيل الفيديو</a>
+
+      <!-- زر تنزيل حقيقي -->
+      <button id="downloadBtn" class="pill" style="display:none" disabled>⬇️ تنزيل الفيديو</button>
+
       <button id="installBtn">تثبيت التطبيق</button>
       <span class="badge" id="status">جاهز</span>
     </div>
@@ -233,7 +236,6 @@
 
 <script>
 (function(){
-  // عناصر
   const els = {
     videoFile: document.getElementById('videoFile'),
     audioFile: document.getElementById('audioFile'),
@@ -254,7 +256,7 @@
     canvas: document.getElementById('canvas'),
     snapshot: document.getElementById('snapshot'),
     exportBtn: document.getElementById('export'),
-    downloadBtn: document.getElementById('download'),
+    downloadBtn: document.getElementById('downloadBtn'),
     status: document.getElementById('status'),
     log: document.getElementById('log'),
     thumbs: document.getElementById('thumbs'),
@@ -279,7 +281,6 @@
     const url = URL.createObjectURL(file);
     els.video.src = url; els.video.load();
     els.video.onloadedmetadata = ()=>{
-      // افتراضي: اضبط canvas على أبعاد الفيديو الأصلية
       els.canvas.width = els.video.videoWidth || 1280;
       els.canvas.height = els.video.videoHeight || 720;
       setStatus('فيديو جاهز: ' + Math.round(els.video.duration) + ' ثانية');
@@ -335,7 +336,6 @@
   // رسم الإطار المركب
   function drawCompositeFrame(ctx, video, canvas, t){
     const w = canvas.width, h = canvas.height;
-    // انتقال
     const start = parseFloat(document.getElementById('startSec')?.value || 0) || 0;
     const end = parseFloat(document.getElementById('endSec')?.value || video.duration) || video.duration;
     const dur = Math.max(0.001, end - start);
@@ -461,18 +461,20 @@
     recorder.onstop = ()=>{
       const blob = new Blob(recordedBlobs, { type: finalOpts.mimeType || 'video/webm' });
       // revoke القديم لو موجود
-      if(lastOutputUrl) URL.revokeObjectURL(lastOutputUrl);
+      if(lastOutputUrl) try{ URL.revokeObjectURL(lastOutputUrl); }catch{}
       const url = URL.createObjectURL(blob);
       lastOutputUrl = url;
-      els.downloadBtn.href = url;
+
+      // تفعيل زر التنزيل كزر حقيقي
+      els.downloadBtn.disabled = false;
       els.downloadBtn.style.display = 'inline-flex';
+      els.downloadBtn.dataset.blobUrl = url; // نخزن الرابط في dataset
+
       setStatus('جاهز للتنزيل');
       log('الحجم النهائي: ' + Math.round(blob.size/1024) + ' KB');
       showToast('تم تجهيز الفيديو للتنزيل');
-      // revoke بعد التنزيل تلقائياً
-      els.downloadBtn.addEventListener('click', ()=>{
-        setTimeout(()=> { try{ URL.revokeObjectURL(url); }catch{} }, 3000);
-      }, { once: true });
+
+      // عند الضغط على الزر سيتم تنزيل الملف ثم revoke بعد ثواني
     };
 
     recorder.start(120);
@@ -508,6 +510,29 @@
         log('خطأ أثناء الإيقاف: ' + err.message); exporting = false; setStatus('فشل التصدير');
       }
     }
+  });
+
+  // زر التنزيل: سلوك زر حقيقي يقوم بإنشاء رابط مؤقت وتحميله ثم تنظيف الذاكرة
+  els.downloadBtn.addEventListener('click', (e)=>{
+    const url = e.currentTarget.dataset.blobUrl;
+    if(!url) return;
+    // اسم الملف
+    const filename = 'edited-video.webm';
+    // إنشاء رابط مؤقت وتحفيز التنزيل
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // تعطيل الزر بعد التنزيل، وإلغاء الـ URL بعد تأخير بسيط
+    els.downloadBtn.disabled = true;
+    setTimeout(()=> {
+      try{ URL.revokeObjectURL(url); }catch{}
+      if(lastOutputUrl === url) lastOutputUrl = null;
+      els.downloadBtn.style.display = 'none';
+      setStatus('تم التنزيل');
+    }, 2500);
   });
 
   // معاينة فلتر مباشر
