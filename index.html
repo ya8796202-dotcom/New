@@ -2,89 +2,428 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Yotyosr — شبيه يوتيوب</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Yotyosr — شبيه يوتيوب | PWA متقدم</title>
 <meta name="theme-color" content="#0ea5e9" />
+
 <style>
-/* ستايل مشابه ليوتيوب */
-body{margin:0;background:#0f0f0f;color:#fff;font-family:Roboto,"Segoe UI",Tahoma,sans-serif}
-.header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#0f0f0f;border-bottom:1px solid #303030}
-.logo{display:flex;align-items:center;gap:8px;font-weight:700}
-.logo .play{width:26px;height:18px;background:#fff;clip-path:polygon(0 0,100% 50%,0 100%)}
-.sidebar{width:220px;background:#0f0f0f;border-right:1px solid #303030;position:fixed;top:56px;bottom:0;overflow:auto}
-.nav-item{padding:10px 16px;color:#e6e6e6;cursor:pointer}
-.nav-item:hover{background:#1f1f1f}
-.main{margin-left:220px;padding-top:56px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:16px}
-.card{cursor:pointer}
-.thumb{width:100%;aspect-ratio:16/9;background:#111;border-radius:12px;object-fit:cover}
-.meta{margin-top:6px}
-.title{font-weight:500}
-.sub{color:#aaa;font-size:.9rem}
-video{width:100%;max-height:70vh;background:#000;border-radius:12px}
+  :root{
+    --bg:#0f0f0f; --header:#0f0f0f; --sidebar:#0f0f0f; --text:#fff; --muted:#aaaaaa; --border:#303030;
+    --accent:#0ea5e9; --accent2:#22d3ee;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0; background:var(--bg); color:var(--text); font-family:Roboto,"Segoe UI",Tahoma,sans-serif}
+  a{color:inherit; text-decoration:none}
+
+  /* App layout */
+  .app{display:grid; grid-template-columns: 240px 1fr; grid-template-rows: 56px 1fr; grid-template-areas:
+      "header header" "sidebar main"; height:100vh}
+
+  /* Header */
+  .header{grid-area:header; display:flex; align-items:center; justify-content:space-between; padding:0 16px; background:var(--header); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10}
+  .header-left{display:flex; align-items:center; gap:12px}
+  .logo{display:flex; align-items:center; gap:8px; font-weight:700}
+  .logo .play{width:26px; height:18px; background:#fff; clip-path: polygon(0 0, 100% 50%, 0 100%)}
+  .logo .name{letter-spacing:.2px}
+  .search{display:flex; align-items:center; gap:0; flex:1; max-width:700px; margin:0 16px}
+  .search input{
+    flex:1; height:40px; background:#121212; border:1px solid var(--border); color:#fff; padding:0 12px; border-radius:20px 0 0 20px; outline:none;
+  }
+  .search button{
+    height:40px; width:64px; border:1px solid var(--border); border-left:none; border-radius:0 20px 20px 0; background:#222; color:#fff; cursor:pointer;
+  }
+  .header-right{display:flex; align-items:center; gap:10px}
+  .install-btn{padding:8px 12px; border-radius:999px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; cursor:pointer}
+  .icon-btn{width:40px; height:40px; display:grid; place-items:center; border-radius:999px; background:#222; border:1px solid var(--border); cursor:pointer}
+
+  /* Sidebar */
+  .sidebar{grid-area:sidebar; background:var(--sidebar); border-right:1px solid var(--border); padding:8px 0; overflow:auto}
+  .nav-item{display:flex; align-items:center; gap:12px; padding:10px 16px; border-radius:10px; cursor:pointer; color:#e6e6e6}
+  .nav-item:hover{background:#1f1f1f}
+  .section-title{padding:8px 16px; color:#bbb; font-size:.9rem; margin-top:6px}
+
+  /* Main */
+  .main{grid-area:main; overflow:auto}
+  .chips{display:flex; gap:8px; padding:12px 16px; border-bottom:1px solid var(--border); position:sticky; top:56px; background:var(--bg); z-index:5}
+  .chip{padding:8px 12px; background:#272727; border:1px solid var(--border); border-radius:999px; color:#ddd; cursor:pointer; white-space:nowrap}
+  .chip.active{background:#fff; color:#000; border-color:#fff}
+  .grid{display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px; padding:16px}
+  .card{display:flex; flex-direction:column; gap:8px; cursor:pointer}
+  .thumb{width:100%; aspect-ratio:16/9; background:#111; border-radius:12px; overflow:hidden; object-fit:cover}
+  .row{display:flex; gap:10px}
+  .avatar{width:36px; height:36px; border-radius:999px; background:#333; flex-shrink:0}
+  .meta{display:flex; flex-direction:column; gap:2px}
+  .title{font-weight:500; line-height:1.3}
+  .sub{color:#aaa; font-size:.9rem}
+
+  /* Watch page */
+  .watch{display:grid; grid-template-columns: 1fr 420px; gap:16px; padding:16px}
+  .player-wrap{background:#000; border-radius:12px; overflow:hidden}
+  .player-wrap video{width:100%; height:auto; display:block; background:#000}
+  .watch-title{font-size:1.2rem; font-weight:600; margin-top:8px}
+  .watch-actions{display:flex; gap:8px; margin:8px 0}
+  .btn{padding:8px 12px; border-radius:999px; background:#272727; border:1px solid var(--border); color:#fff; cursor:pointer}
+  .btn.secondary{background:#1f1f1f}
+  .watch-meta{color:#aaa; font-size:.9rem}
+  .suggestions{display:flex; flex-direction:column; gap:12px}
+  .sugg-card{display:flex; gap:10px; cursor:pointer}
+  .sugg-thumb{width:180px; aspect-ratio:16/9; background:#111; border-radius:8px; overflow:hidden; object-fit:cover; flex-shrink:0}
+  .sugg-meta{display:flex; flex-direction:column; gap:2px}
+  .divider{height:1px; background:var(--border); margin:12px 0}
+
+  /* Toast + offline */
+  .toast{position:fixed; right:20px; bottom:20px; background:rgba(16,185,129,.15); color:#d1fae5; border:1px solid rgba(16,185,129,.45);
+    padding:10px 14px; border-radius:12px; backdrop-filter: blur(10px);
+    transform: translateY(20px); opacity:0; pointer-events:none; transition:.35s ease;}
+  .toast.show{transform:translateY(0); opacity:1; pointer-events:auto}
+  .offline{position:fixed; left:20px; bottom:20px; background:rgba(239,68,68,.12); color:#fecaca; border:1px solid rgba(239,68,68,.4); padding:8px 12px; border-radius:10px}
 </style>
+
 <link id="appIconLink" rel="icon" type="image/png" />
 <link id="manifestLink" rel="manifest" />
 </head>
 <body>
-<div class="header">
-  <div class="logo"><div class="play"></div><div class="name">Yotyosr</div></div>
-  <input id="searchInp" type="text" placeholder="ابحث" style="flex:1;margin:0 16px;padding:8px;border-radius:20px;border:1px solid #303030;background:#121212;color:#fff"/>
-</div>
-<div class="sidebar">
-  <div class="nav-item" data-cat="الكل">الرئيسية</div>
-  <div class="nav-item" data-cat="موسيقى">موسيقى</div>
-  <div class="nav-item" data-cat="ألعاب">ألعاب</div>
-  <div class="nav-item" data-cat="تعليمي">تعليمي</div>
-  <div class="nav-item" data-cat="رياضة">رياضة</div>
-</div>
-<div class="main">
-  <div id="homeView">
-    <div class="grid" id="grid"></div>
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">
+        <div class="play"></div>
+        <div class="name">Yotyosr</div>
+      </div>
+    </div>
+
+    <div class="search">
+      <input id="searchInp" type="text" placeholder="ابحث" />
+      <button id="searchBtn">بحث</button>
+    </div>
+
+    <div class="header-right">
+      <button id="installBtn" class="install-btn" disabled>تثبيت</button>
+      <div class="icon-btn" title="إشعارات">🔔</div>
+      <div class="icon-btn" title="حساب">👤</div>
+    </div>
   </div>
-  <div id="watchView" style="display:none;padding:16px">
-    <video id="player" controls playsinline></video>
-    <div class="title" id="watchTitle">—</div>
-    <div class="sub" id="watchMeta">—</div>
-    <button onclick="backHome()">⬅️ رجوع</button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="section-title">الأقسام</div>
+    <div class="nav-item" data-chip="الكل">الرئيسية</div>
+    <div class="nav-item" data-chip="موسيقى">موسيقى</div>
+    <div class="nav-item" data-chip="ألعاب">ألعاب</div>
+    <div class="nav-item" data-chip="تعليمي">تعليمي</div>
+    <div class="nav-item" data-chip="رياضة">رياضة</div>
+    <div class="section-title">أدوات</div>
+    <div class="nav-item" id="pipNav">صورة داخل صورة</div>
+    <div class="nav-item" id="homeNav">الصفحة الرئيسية</div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="chips" id="chips">
+      <div class="chip active" data-chip="الكل">الكل</div>
+      <div class="chip" data-chip="موسيقى">موسيقى</div>
+      <div class="chip" data-chip="ألعاب">ألعاب</div>
+      <div class="chip" data-chip="تعليمي">تعليمي</div>
+      <div class="chip" data-chip="رياضة">رياضة</div>
+    </div>
+
+    <div id="homeView">
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div id="watchView" style="display:none">
+      <div class="watch">
+        <div>
+          <div class="player-wrap"><video id="player" controls playsinline></video></div>
+          <div class="watch-title" id="watchTitle">—</div>
+          <div class="watch-actions">
+            <button class="btn" id="likeBtn">👍 أعجبني</button>
+            <button class="btn" id="shareBtn">🔗 مشاركة</button>
+            <button class="btn" id="speedBtn">⚡ السرعة</button>
+            <button class="btn" id="pipBtn">🖼️ صورة داخل صورة</button>
+            <button class="btn secondary" id="backBtn">⬅️ رجوع</button>
+          </div>
+          <div class="watch-meta" id="watchMeta">—</div>
+          <div class="divider"></div>
+          <div class="watch-meta">التعليقات غير مفعلة في هذا النموذج.</div>
+        </div>
+        <div>
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="offline" class="offline" hidden>أنت أوفلاين — التطبيق يعمل دون اتصال.</div>
+
+<!-- عناصر أيقونة/مانيفست -->
+<canvas id="appIconCanvas" width="128" height="128" style="position:fixed;left:-9999px;top:-9999px"></canvas>
+<link id="appIconLink" rel="icon" type="image/png" />
+<link id="manifestLink" rel="manifest" />
+
 <script>
-let library=[];
-async function loadVideos(){
-  const res=await fetch('videos.json');
-  library=await res.json();
-  renderHome();
+/* ========= أدوات واجهة ========= */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
+const showToast = (msg, ok=true) => {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.style.background = ok ? 'rgba(16,185,129,.15)' : 'rgba(239,68,68,.12)';
+  t.style.color = ok ? '#d1fae5' : '#fecaca';
+  t.style.borderColor = ok ? 'rgba(16,185,129,.45)' : 'rgba(239,68,68,.4)';
+  t.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(()=> t.classList.remove('show'), 3000);
+};
+
+/* ========= أيقونة ديناميكية ========= */
+function generateIcon(size=192){
+  const c = $('#appIconCanvas'); c.width=size; c.height=size;
+  const ctx = c.getContext('2d');
+  const g = ctx.createLinearGradient(0,0,size,size);
+  g.addColorStop(0,'#0ea5e9'); g.addColorStop(1,'#22d3ee');
+  ctx.fillStyle=g; ctx.fillRect(0,0,size,size);
+  ctx.fillStyle='#0b1220'; ctx.beginPath(); ctx.arc(size/2,size/2,size*0.45,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.beginPath();
+  ctx.moveTo(size*0.45, size*0.35);
+  ctx.lineTo(size*0.45, size*0.65);
+  ctx.lineTo(size*0.70, size*0.50);
+  ctx.closePath(); ctx.fill();
+  return c.toDataURL('image/png');
 }
+
+/* ========= حقن Manifest ========= */
+function injectManifest(){
+  const icon192 = generateIcon(192);
+  const icon512 = generateIcon(512);
+  $('#appIconLink').href = icon192;
+  const manifest = {
+    name: "Yotyosr — واجهة شبيهة بيوتيوب | PWA",
+    short_name: "Yotyosr",
+    start_url: ".",
+    scope: ".",
+    display: "standalone",
+    background_color: "#0f0f0f",
+    theme_color: "#0ea5e9",
+    description: "منصة عرض فيديوهات من ملفاتك مع واجهة شبيهة بيوتيوب.",
+    icons: [
+      { src: icon192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
+      { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+    ],
+    shortcuts: [
+      { name:"بحث", url:"./?focus=search", description:"تركيز على البحث" },
+      { name:"استئناف المشاهدة", url:"./?resume=1", description:"فتح آخر فيديو" }
+    ]
+  };
+  const dataUrl = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(manifest))));
+  $('#manifestLink').href = dataUrl;
+}
+
+/* ========= Service Worker ========= */
+async function registerSW(){
+  const swCode = `
+    const CACHE='yotyosr-cache-v1';
+    const CORE=['.','videos.json'];
+    self.addEventListener('install',e=>{
+      e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));
+      self.skipWaiting();
+    });
+    self.addEventListener('activate',e=>{
+      e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch',e=>{
+      const req=e.request; const url=new URL(req.url);
+      if(req.method==='GET' && url.origin===self.location.origin){
+        e.respondWith(
+          caches.match(req).then(res=>{
+            return res || fetch(req).then(net=>{
+              const copy=net.clone();
+              const ct = copy.headers.get('content-type') || '';
+              if(!ct.startsWith('video/')){ caches.open(CACHE).then(c=>c.put(req, copy)).catch(()=>{}); }
+              return net;
+            }).catch(()=> caches.match('.'));
+          })
+        );
+      }
+    });
+  `;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  try{
+    await navigator.serviceWorker.register(swUrl,{scope:'.'});
+    showToast('Service Worker جاهز 🛡️');
+    setTimeout(()=> URL.revokeObjectURL(swUrl), 4000);
+  }catch(e){ console.error(e); showToast('تعذّر تسجيل Service Worker', false); }
+}
+
+/* ========= حالة الاتصال ========= */
+function updateOnline(){ $('#offline').hidden = navigator.onLine; }
+window.addEventListener('online', updateOnline);
+window.addEventListener('offline', updateOnline);
+
+/* ========= تحميل الفيديوهات من ملف خارجي ========= */
+let library = []; // {id,title,channel,views:number,age,url,thumb,category}
+const LS_LAST = 'yotyosr.last';
+function setLastIndex(i){ localStorage.setItem(LS_LAST, String(i)); }
+function getLastIndex(){ const v = localStorage.getItem(LS_LAST); return v?Number(v):-1; }
+
+async function fetchLibrary(){
+  try{
+    const res = await fetch('videos.json', {cache:'no-store'});
+    library = await res.json();
+  }catch(e){
+    showToast('تعذّر تحميل الفيديوهات', false);
+    library = [];
+  }
+}
+
+/* ========= أدوات عرض ========= */
+function makeThumbText(w=1280,h=720,text='Yotyosr'){
+  const cn = document.createElement('canvas'); cn.width=w; cn.height=h;
+  const ctx = cn.getContext('2d');
+  const g = ctx.createLinearGradient(0,0,w,h); g.addColorStop(0,'#202020'); g.addColorStop(1,'#404040');
+  ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#fff'; ctx.font='bold 64px "Segoe UI", Roboto'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(text, w/2, h/2);
+  ctx.fillStyle='#0ea5e9'; ctx.beginPath(); ctx.moveTo(w/2 - 60, h/2 - 40); ctx.lineTo(w/2 - 60, h/2 + 40); ctx.lineTo(w/2 + 20, h/2); ctx.closePath(); ctx.fill();
+  return cn.toDataURL('image/jpeg', 0.9);
+}
+
+/* ========= الصفحة الرئيسية ========= */
 function renderHome(){
-  const grid=document.getElementById('grid');grid.innerHTML='';
-  library.forEach(it=>{
-    const card=document.createElement('div');card.className='card';
-    const th=document.createElement('img');th.className='thumb';th.src=it.thumb||'';th.alt=it.title;
-    const meta=document.createElement('div');meta.className='meta';
-    const title=document.createElement('div');title.className='title';title.textContent=it.title;
-    const sub=document.createElement('div');sub.className='sub';sub.textContent=`${it.channel} • ${it.views} • ${it.age}`;
-    meta.appendChild(title);meta.appendChild(sub);
-    card.appendChild(th);card.appendChild(meta);
-    card.addEventListener('click',()=>openWatch(it));
-    grid.appendChild(card);
-  });
+  $('#homeView').style.display='block';
+  $('#watchView').style.display='none';
+  const q = ($('#searchInp').value||'').trim().toLowerCase();
+  const activeChip = [...$$('.chip')].find(c=> c.classList.contains('active'))?.dataset.chip || 'الكل';
+  const grid = $('#grid'); grid.innerHTML='';
+
+  library
+    .filter(it=> (activeChip==='الكل' || it.category===activeChip))
+    .filter(it=> it.title.toLowerCase().includes(q) || (it.channel||'').toLowerCase().includes(q))
+    .forEach((it, idx)=>{
+      const card = document.createElement('div'); card.className='card';
+      const th = document.createElement('img'); th.className='thumb'; th.src = it.thumb || makeThumbText(1280,720,it.title); th.alt = it.title; th.loading='lazy';
+      const row = document.createElement('div'); row.className='row';
+      const avatar = document.createElement('div'); avatar.className='avatar';
+      const meta = document.createElement('div'); meta.className='meta';
+      const title = document.createElement('div'); title.className='title'; title.textContent = it.title;
+      const sub = document.createElement('div'); sub.className='sub'; sub.textContent = `${it.channel} • ${it.views} مشاهدة • ${it.age}`;
+      meta.appendChild(title); meta.appendChild(sub);
+      row.appendChild(avatar); row.appendChild(meta);
+      card.appendChild(th); card.appendChild(row);
+      card.addEventListener('click', ()=> openWatchByIndex(idx));
+      grid.appendChild(card);
+    });
 }
-function openWatch(it){
-  document.getElementById('homeView').style.display='none';
-  document.getElementById('watchView').style.display='block';
-  const player=document.getElementById('player');
-  player.src=it.url;
-  document.getElementById('watchTitle').textContent=it.title;
-  document.getElementById('watchMeta').textContent=`${it.channel} • ${it.views} • ${it.age}`;
+
+/* ========= صفحة المشاهدة ========= */
+const player = $('#player');
+function openWatchByIndex(i){
+  const it = library[i]; if(!it) return;
+  $('#homeView').style.display='none';
+  $('#watchView').style.display='block';
+  $('#watchTitle').textContent = it.title;
+  $('#watchMeta').textContent = `${it.channel} • ${it.views} مشاهدة • ${it.age}`;
+  player.src = it.url;
+  player.play().catch(()=>{});
+  setLastIndex(i);
+
+  // اقتراحات
+  const sugg = $('#suggestions'); sugg.innerHTML='';
+  library
+    .filter(s=> s.id!==it.id)
+    .slice(0,10)
+    .forEach(s=>{
+      const sc = document.createElement('div'); sc.className='sugg-card';
+      const th = document.createElement('img'); th.className='sugg-thumb'; th.src = s.thumb || makeThumbText(640,360,s.title); th.alt = s.title;
+      const m = document.createElement('div'); m.className='sugg-meta';
+      const tt = document.createElement('div'); tt.textContent = s.title; tt.style.fontWeight='500';
+      const sb = document.createElement('div'); sb.textContent = `${s.channel} • ${s.views} مشاهدة`; sb.style.color='#aaa';
+      m.appendChild(tt); m.appendChild(sb);
+      sc.appendChild(th); sc.appendChild(m);
+      sc.addEventListener('click', ()=> openWatchByIndex(library.indexOf(s)));
+      sugg.appendChild(sc);
+    });
+
+  // عدّاد مشاهدات
+  it.views = (Number(it.views)||0) + 1;
 }
-function backHome(){
-  document.getElementById('watchView').style.display='none';
-  document.getElementById('homeView').style.display='block';
-  document.getElementById('player').pause();
+
+/* ========= أحداث واجهة ========= */
+$('#searchBtn').addEventListener('click', renderHome);
+$('#searchInp').addEventListener('input', renderHome);
+$('#chips').addEventListener('click', (e)=>{
+  const chip = e.target.closest('.chip'); if(!chip) return;
+  $$('.chip').forEach(c=> c.classList.remove('active'));
+  chip.classList.add('active');
+  renderHome();
+});
+$('#homeNav').addEventListener('click', renderHome);
+$('#backBtn').addEventListener('click', renderHome);
+
+/* ========= PiP + سرعات + مشاركة ========= */
+$('#pipBtn').addEventListener('click', async ()=>{
+  if(document.pictureInPictureEnabled && !player.disablePictureInPicture){ try{ await player.requestPictureInPicture(); }catch{} }
+  else showToast('PiP غير مدعوم', false);
+});
+$('#pipNav').addEventListener('click', async ()=>{
+  if(document.pictureInPictureEnabled && !player.disablePictureInPicture){ try{ await player.requestPictureInPicture(); }catch{} }
+  else showToast('PiP غير مدعوم', false);
+});
+$('#speedBtn').addEventListener('click', ()=>{
+  const rates = [0.5, 0.75, 1, 1.25, 1.5, 2];
+  const cur = player.playbackRate;
+  const next = rates[(rates.indexOf(cur)+1) % rates.length] ?? 1;
+  player.playbackRate = next;
+  showToast('السرعة: ' + next + '×');
+});
+$('#shareBtn').addEventListener('click', async ()=>{
+  const i = getLastIndex(); const it = library[i];
+  if(navigator.share && it){
+    try{ await navigator.share({title: it.title, text: it.channel, url: location.href}); showToast('تمت المشاركة ✅'); }
+    catch{ showToast('أُلغيت المشاركة', false); }
+  }else showToast('واجهة المشاركة غير مدعومة', false);
+});
+$('#likeBtn').addEventListener('click', ()=> showToast('تم تسجيل الإعجاب ❤️'));
+
+/* ========= اختصارات لوحة المفاتيح ========= */
+document.addEventListener('keydown', (e)=>{
+  const k = e.key.toLowerCase();
+  if(k==='k'){ if(player.paused) player.play(); else player.pause(); }
+  if(k==='j'){ player.currentTime = Math.max(0, player.currentTime - 10); }
+  if(k==='l'){ player.currentTime = Math.min(player.duration||player.currentTime+10, player.currentTime + 10); }
+});
+
+/* ========= تثبيت PWA ========= */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault(); deferredPrompt=e; $('#installBtn').disabled=true;
+  // نفعّل بعد ثانية لنعطي إحساس جاهزية
+  setTimeout(()=> { $('#installBtn').disabled=false; showToast('جاهز للتثبيت — اضغط زر تثبيت'); }, 500);
+});
+$('#installBtn').addEventListener('click', async ()=>{
+  if(!deferredPrompt) return; deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice; deferredPrompt=null; $('#installBtn').disabled=true;
+  showToast(outcome==='accepted' ? 'تم التثبيت 🎉' : 'أُلغي التثبيت');
+});
+
+/* ========= تهيئة ========= */
+async function init(){
+  injectManifest();
+  updateOnline();
+  await registerSW();
+  await fetchLibrary();
+  renderHome();
+
+  const params = new URLSearchParams(location.search);
+  if(params.get('focus')==='search'){ $('#searchInp').focus(); }
+  if(params.has('resume')){ const i = getLastIndex(); if(i>=0) openWatchByIndex(i); }
 }
-document.addEventListener('DOMContentLoaded',loadVideos);
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
