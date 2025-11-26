@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>محرر فيديو زجاجي — زر تنزيل كزر حقيقي</title>
+<title>محرر فيديو زجاجي — تصدير أسرع</title>
 <link rel="manifest" href="/manifest.json">
 <style>
   :root{
@@ -55,8 +55,8 @@
 </head>
 <body>
 <header>
-  <h1>محرر فيديو زجاجي — زر تنزيل كزر حقيقي</h1>
-  <div class="small">الزر الآن زر حقيقي يقوم بتنزيل الملف بعد التعديل</div>
+  <h1>محرر فيديو زجاجي — تصدير أسرع</h1>
+  <div class="small">تم تحسين حلقة الرسم لاستخدام requestVideoFrameCallback و ImageBitmap</div>
 </header>
 
 <div class="container">
@@ -134,9 +134,9 @@
       <div>
         <label>جودة التصدير</label>
         <select id="quality">
-          <option value="full">Full (أصلية)</option>
-          <option value="720">720p (أسرع)</option>
+          <option value="720" selected>720p (أسرع)</option>
           <option value="480">480p (أسرع جداً)</option>
+          <option value="full">Full (أصلية)</option>
         </select>
       </div>
       <div>
@@ -161,8 +161,8 @@
       <div>
         <label>bitsPerSecond (تقريبي)</label>
         <select id="bits">
-          <option value="2500000" selected>2.5 Mbps (توازن)</option>
-          <option value="1500000">1.5 Mbps (أصغر)</option>
+          <option value="1500000" selected>1.5 Mbps (سريع وصغير)</option>
+          <option value="2500000">2.5 Mbps (توازن)</option>
           <option value="4000000">4 Mbps (جودة أعلى)</option>
         </select>
       </div>
@@ -172,7 +172,7 @@
       <div>
         <label>إضافة صورة Overlay</label>
         <input id="imageFile" type="file" accept="image/*">
-        <div class="help">تظهر فوق الفيديو — يمكنك تحريكها وحركتها</div>
+        <div class="help">تظهر فوق الفيديو — يتم تحويلها إلى ImageBitmap للتسريع</div>
       </div>
       <div>
         <label>نص Overlay</label>
@@ -235,7 +235,7 @@
 <footer>احفظ الملف باسم index.html وارفعه مع manifest.json و sw.js و أيقونات في جذر المستودع</footer>
 
 <script>
-(function(){
+(async function(){
   const els = {
     videoFile: document.getElementById('videoFile'),
     audioFile: document.getElementById('audioFile'),
@@ -267,7 +267,7 @@
   };
 
   let audio = null, audioCtx=null, gainNode=null, audioSource=null;
-  let overlayImg = null;
+  let overlayImg = null, overlayBitmap = null;
   let recorder = null, recordedBlobs=[], exporting=false;
   let lastOutputUrl = null;
   let deferredPrompt = null;
@@ -296,12 +296,26 @@
     log('تم تحميل الموسيقى');
   });
 
-  // تحميل صورة Overlay
-  els.imageFile.addEventListener('change', e=>{
+  // تحميل صورة Overlay وتحويلها إلى ImageBitmap فوراً لتسريع الرسم
+  els.imageFile.addEventListener('change', async e=>{
     const file = e.target.files?.[0]; if(!file) return;
     const url = URL.createObjectURL(file);
-    overlayImg = new Image(); overlayImg.src = url;
-    overlayImg.onload = ()=> log('تم تحميل الصورة كـ Overlay');
+    overlayImg = new Image();
+    overlayImg.src = url;
+    overlayImg.onload = async ()=>{
+      try{
+        if('createImageBitmap' in window){
+          overlayBitmap = await createImageBitmap(overlayImg);
+          log('تم تحويل الصورة إلى ImageBitmap للتسريع');
+        } else {
+          overlayBitmap = null;
+          log('createImageBitmap غير مدعوم، سيتم استخدام drawImage العادي');
+        }
+      }catch(err){
+        overlayBitmap = null;
+        log('خطأ في createImageBitmap، سيتم استخدام drawImage العادي');
+      }
+    };
   });
 
   // لقطة سريعة
@@ -333,7 +347,7 @@
     }
   }
 
-  // رسم الإطار المركب
+  // رسم الإطار المركب (مبسط قدر الإمكان)
   function drawCompositeFrame(ctx, video, canvas, t){
     const w = canvas.width, h = canvas.height;
     const start = parseFloat(document.getElementById('startSec')?.value || 0) || 0;
@@ -354,9 +368,11 @@
     ctx.save();
     ctx.globalAlpha = alpha;
     ctx.filter = els.filter.value === 'none' ? 'none' : els.filter.value;
+    // رسم الفيديو
     ctx.drawImage(video, 0, 0, w, h);
     ctx.restore();
 
+    // تلوين خفيف
     const extra = parseFloat(els.filterExtra.value) || 0;
     if(extra > 0){
       ctx.save();
@@ -366,7 +382,8 @@
       ctx.restore();
     }
 
-    if(overlayImg){
+    // رسم overlay باستخدام ImageBitmap إن وُجد
+    if(overlayBitmap){
       ctx.save();
       const baseX = parseFloat(els.imgX.value) || 40;
       const baseY = parseFloat(els.imgY.value) || 40;
@@ -376,16 +393,27 @@
       else if(anim === 'float'){ y = baseY + Math.sin(t * 1.2) * 30; }
       else if(anim === 'spin'){ rot = Math.sin(t * 0.6) * 0.15; }
       else if(anim === 'zoom'){ scale = 1 + Math.sin(t * 0.5) * 0.08; }
-      const ow = Math.min(w / 3, overlayImg.width);
-      const oh = ow * (overlayImg.height / overlayImg.width);
+      const ow = Math.min(w / 3, overlayBitmap.width);
+      const oh = ow * (overlayBitmap.height / overlayBitmap.width);
       ctx.translate(x + ow/2, y + oh/2);
       ctx.rotate(rot);
       ctx.scale(scale, scale);
       ctx.globalAlpha = 0.92;
-      ctx.drawImage(overlayImg, -ow/2, -oh/2, ow, oh);
+      ctx.drawImage(overlayBitmap, -ow/2, -oh/2, ow, oh);
+      ctx.restore();
+    } else if(overlayImg){
+      // fallback: drawImage العادي
+      ctx.save();
+      const baseX = parseFloat(els.imgX.value) || 40;
+      const baseY = parseFloat(els.imgY.value) || 40;
+      const ow = Math.min(w / 3, overlayImg.width);
+      const oh = ow * (overlayImg.height / overlayImg.width);
+      ctx.globalAlpha = 0.92;
+      ctx.drawImage(overlayImg, baseX, baseY, ow, oh);
       ctx.restore();
     }
 
+    // نص
     const txt = els.overlayText.value.trim();
     if(txt){
       ctx.save();
@@ -400,7 +428,7 @@
     }
   }
 
-  // التصدير
+  // التصدير (محسّن)
   els.exportBtn.addEventListener('click', async ()=>{
     if(exporting) return;
     if(!els.video.src){ alert('حمّل فيديو أولاً'); return; }
@@ -409,12 +437,14 @@
     // ضبط جودة ودقة
     setCanvasSizeForQuality(els.quality.value);
     const fps = parseInt(els.fps.value || '24', 10);
-    const bitsPerSecond = parseInt(els.bits.value || '2500000', 10);
+    const bitsPerSecond = parseInt(els.bits.value || '1500000', 10);
 
     const ctx = els.canvas.getContext('2d');
+
+    // استخدم captureStream مع fps منخفض لتسريع
     const stream = els.canvas.captureStream(fps);
 
-    // صوت الفيديو الأصلي
+    // صوت الفيديو الأصلي (اختياري)
     const addOriginal = (els.muteOriginal.value === 'no');
     if(addOriginal){
       try{
@@ -427,22 +457,31 @@
       els.video.muted = true;
     }
 
-    // صوت خارجي عبر WebAudio
+    // صوت خارجي عبر WebAudio (مبسط)
     if(audio){
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      gainNode = audioCtx.createGain();
-      gainNode.gain.value = parseFloat(els.audioGain.value) || 1;
-      audioSource = audioCtx.createMediaElementSource(audio);
-      const dest = audioCtx.createMediaStreamDestination();
-      audioSource.connect(gainNode).connect(dest);
-      audioSource.connect(gainNode).connect(audioCtx.destination);
-      const aTracks = dest.stream.getAudioTracks();
-      if(aTracks.length) stream.addTrack(aTracks[0]);
+      try{
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = parseFloat(els.audioGain.value) || 1;
+        audioSource = audioCtx.createMediaElementSource(audio);
+        const dest = audioCtx.createMediaStreamDestination();
+        audioSource.connect(gainNode).connect(dest);
+        audioSource.connect(gainNode).connect(audioCtx.destination);
+        const aTracks = dest.stream.getAudioTracks();
+        if(aTracks.length) stream.addTrack(aTracks[0]);
+      }catch(e){
+        log('تعذر إعداد WebAudio: ' + e.message);
+      }
     }
 
-    // إعداد MediaRecorder مع bitsPerSecond
-    const opts = { mimeType: 'video/webm;codecs=vp9', bitsPerSecond: bitsPerSecond };
-    const finalOpts = MediaRecorder.isTypeSupported(opts.mimeType) ? opts : { mimeType: 'video/webm;codecs=vp8' };
+    // إعداد MediaRecorder بخيارات سريعة (vp8 غالباً أسرع على بعض الأجهزة)
+    const opts = { mimeType: 'video/webm;codecs=vp8', bitsPerSecond: bitsPerSecond };
+    let finalOpts = opts;
+    if(!MediaRecorder.isTypeSupported(opts.mimeType)){
+      finalOpts = { mimeType: 'video/webm;codecs=vp9', bitsPerSecond: bitsPerSecond };
+      if(!MediaRecorder.isTypeSupported(finalOpts.mimeType)) finalOpts = { mimeType: 'video/webm' };
+    }
+
     try{
       recorder = new MediaRecorder(stream, finalOpts);
     }catch(err){
@@ -460,7 +499,6 @@
 
     recorder.onstop = ()=>{
       const blob = new Blob(recordedBlobs, { type: finalOpts.mimeType || 'video/webm' });
-      // revoke القديم لو موجود
       if(lastOutputUrl) try{ URL.revokeObjectURL(lastOutputUrl); }catch{}
       const url = URL.createObjectURL(blob);
       lastOutputUrl = url;
@@ -468,16 +506,15 @@
       // تفعيل زر التنزيل كزر حقيقي
       els.downloadBtn.disabled = false;
       els.downloadBtn.style.display = 'inline-flex';
-      els.downloadBtn.dataset.blobUrl = url; // نخزن الرابط في dataset
+      els.downloadBtn.dataset.blobUrl = url;
 
       setStatus('جاهز للتنزيل');
       log('الحجم النهائي: ' + Math.round(blob.size/1024) + ' KB');
       showToast('تم تجهيز الفيديو للتنزيل');
-
-      // عند الضغط على الزر سيتم تنزيل الملف ثم revoke بعد ثواني
     };
 
-    recorder.start(120);
+    // ابدأ التسجيل مع timeslice أكبر لتقليل overhead
+    recorder.start(500);
 
     // تشغيل ومزامنة
     const rate = parseFloat(els.rate.value) || 1;
@@ -492,15 +529,29 @@
     await els.video.play();
     if(audio) await audio.play();
 
+    // استخدم requestVideoFrameCallback إن وُجد لمزامنة أسرع مع إطار الفيديو
     let stopReq = false;
-    function loop(){
-      if(stopReq) return;
-      drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime);
-      const t = els.video.currentTime;
-      if(hasEnd && t >= end){ stopReq = true; finish(); return; }
-      requestAnimationFrame(loop);
+    const useRVFC = typeof els.video.requestVideoFrameCallback === 'function';
+    if(useRVFC){
+      const rvfc = (now, metadata) => {
+        if(stopReq) return;
+        drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime);
+        const t = els.video.currentTime;
+        if(hasEnd && t >= end){ stopReq = true; finish(); return; }
+        try{ els.video.requestVideoFrameCallback(rvfc); }catch(e){ requestAnimationFrame(()=>rvfc(now, metadata)); }
+      };
+      try{ els.video.requestVideoFrameCallback(rvfc); }catch(e){ requestAnimationFrame(function loop(){ if(stopReq) return; drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime); const t=els.video.currentTime; if(hasEnd && t>=end){ stopReq=true; finish(); return;} requestAnimationFrame(loop); }); }
+    } else {
+      // fallback إلى requestAnimationFrame
+      function rafLoop(){
+        if(stopReq) return;
+        drawCompositeFrame(ctx, els.video, els.canvas, els.video.currentTime);
+        const t = els.video.currentTime;
+        if(hasEnd && t >= end){ stopReq = true; finish(); return; }
+        requestAnimationFrame(rafLoop);
+      }
+      requestAnimationFrame(rafLoop);
     }
-    loop();
 
     async function finish(){
       try{
@@ -516,16 +567,13 @@
   els.downloadBtn.addEventListener('click', (e)=>{
     const url = e.currentTarget.dataset.blobUrl;
     if(!url) return;
-    // اسم الملف
     const filename = 'edited-video.webm';
-    // إنشاء رابط مؤقت وتحفيز التنزيل
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     a.remove();
-    // تعطيل الزر بعد التنزيل، وإلغاء الـ URL بعد تأخير بسيط
     els.downloadBtn.disabled = true;
     setTimeout(()=> {
       try{ URL.revokeObjectURL(url); }catch{}
