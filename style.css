@@ -1,14 +1,22 @@
-body {
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
-}
-
-h1 {
-    color: darkblue;
-    text-align: center;
-}
-
-p {
-    color: #333;
-    font-size: 18px;
-}
+[
+  {
+    "id": 1,
+    "title": "فيديو من جهازي 1",
+    "channel": "قناتي",
+    "views": "120 مشاهدة",
+    "age": "منذ يومين",
+    "url": "videos/video1.mp4",
+    "thumb": "thumbs/video1.jpg",
+    "category": "الكل"
+  },
+  {
+    "id": 2,
+    "title": "فيديو من جهازي 2",
+    "channel": "قناتي",
+    "views": "85 مشاهدة",
+    "age": "منذ أسبوع",
+    "url": "videos/video2.mp4",
+    "thumb": "thumbs/video2.jpg",
+    "category": "موسيقى"
+  }
+]
